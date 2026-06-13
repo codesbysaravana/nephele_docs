@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+google-generativeai
+python-dotenv
+deepgram-sdk
+pyttsx3
+pydantic
+groq
+assemblyai
+sounddevice
+websocket-client

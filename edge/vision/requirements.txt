@@ -1,0 +1,16 @@
+# Nephele Vision Subsystem Dependencies
+# Optimized for Raspberry Pi 4
+
+# Core
+opencv-python-headless==4.9.0.80    # Use headless on Pi, opencv-python for dev with display
+numpy>=1.24.0
+
+# MediaPipe (Face Detection + FaceMesh)
+mediapipe>=0.10.9
+
+# WebSocket client
+websockets>=12.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.23.0
