@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nephele_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: nephele
+      POSTGRES_PASSWORD: nephele_pass
+      POSTGRES_DB: nephele_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nephele -d nephele_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chroma:
+    image: chromadb/chroma:0.4.15
+    container_name: nephele_chroma
+    restart: always
+    ports:
+      - "8001:8000"
+    volumes:
+      - chromadata:/chroma/chroma
+    environment:
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=False
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nephele_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nephele:nephele_pass@db:5432/nephele_db
+      - CHROMA_SERVER_HOST=chroma
+      - CHROMA_SERVER_PORT=8000
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-MOCK_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY:-MOCK_KEY}
+      - ASSEMBLYAI_API_KEY=${ASSEMBLYAI_API_KEY:-MOCK_KEY}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY:-MOCK_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      chroma:
+        condition: service_started
+
+volumes:
+  pgdata:
+  chromadata:

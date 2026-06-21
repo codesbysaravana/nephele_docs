@@ -1,0 +1,56 @@
+[
+  {
+    "concept": "Joins",
+    "difficulty": "basic",
+    "question": "Can you explain the difference between INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN?",
+    "followups": [
+      "What happens to non-matching rows in a LEFT JOIN?",
+      "In what scenario would you use a self-join?"
+    ]
+  },
+  {
+    "concept": "Joins",
+    "difficulty": "intermediate",
+    "question": "How do database query planners execute Joins internally? Explain Nested Loop, Hash Join, and Merge Join.",
+    "followups": [
+      "When is a Hash Join preferred over a Merge Join?",
+      "How does indexing affect the query planner's choice of Join algorithm?"
+    ]
+  },
+  {
+    "concept": "Joins",
+    "difficulty": "advanced",
+    "question": "Discuss the performance implications of large-scale joins in distributed databases. How do partition-wise joins and broadcast joins work?",
+    "followups": [
+      "What is a shuffle in distributed joining and how do you minimize it?",
+      "Explain skew in distributed datasets and its impact on join performance."
+    ]
+  },
+  {
+    "concept": "Indexes",
+    "difficulty": "basic",
+    "question": "What is a database index, how does it speed up queries, and what is the trade-off in terms of write performance?",
+    "followups": [
+      "Why does a database index slow down INSERT or UPDATE operations?",
+      "How do you determine if a query is using an index?"
+    ]
+  },
+  {
+    "concept": "Indexes",
+    "difficulty": "intermediate",
+    "question": "Compare B-Tree indexes and Hash indexes. What is a covering index and how does it prevent table lookup steps?",
+    "followups": [
+      "Why are B-Trees preferred over Hash indexes for range queries?",
+      "Explain the index-only scan in database execution plans."
+    ]
+  },
+  {
+    "concept": "Indexes",
+    "difficulty": "advanced",
+    "question": "Explain how composite indexes work. What is the left-prefix rule, and how do index scan vs index seek differ in query optimizer analysis?",
+    "followups": [
+      "How does column order in a composite index affect its utility for sorting?",
+      "What are partial indexes and expression indexes, and when should you use them?"
+    ]
+  }
+]

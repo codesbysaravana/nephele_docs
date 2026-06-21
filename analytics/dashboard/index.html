@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nephele Analytics Dashboard</title>
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --panel-bg: rgba(255, 255, 255, 0.03);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(99, 102, 241, 0.15);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-primary: #6366f1; /* Indigo */
+      --accent-secondary: #06b6d4; /* Cyan */
+      --accent-success: #10b981; /* Emerald */
+      --accent-danger: #ef4444; /* Rose */
+      --accent-warning: #f59e0b; /* Amber */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 50px;
+    }
+
+    /* Ambient background glow */
+    .bg-glow {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(0,0,0,0) 70%);
+      top: -200px;
+      right: -100px;
+      z-index: -1;
+      filter: blur(80px);
+    }
+    
+    .bg-glow-left {
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(0,0,0,0) 70%);
+      bottom: -150px;
+      left: -150px;
+      z-index: -1;
+      filter: blur(80px);
+    }
+
+    header {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      font-size: 20px;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .logo-title h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #a5b4fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-title p {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, var(--accent-primary), #4f46e5);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border-color: var(--panel-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 40px auto 0;
+      padding: 0 20px;
+    }
+
+    /* Analytics summary grid */
+    .metrics-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(99, 102, 241, 0.3);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.05);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--glass-glow) 0%, transparent 70%);
+      top: -50px;
+      left: -50px;
+      pointer-events: none;
+    }
+
+    .metric-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #e0e7ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--accent-secondary);
+      font-weight: 600;
+    }
+
+    /* Core content layout grid */
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 25px;
+    }
+
+    .chart-panel-large {
+      grid-column: span 8;
+    }
+
+    .chart-panel-medium {
+      grid-column: span 4;
+    }
+
+    .panel-full {
+      grid-column: span 12;
+    }
+
+    .glass-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* List tables styling */
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .custom-table th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .custom-table td {
+      font-size: 13px;
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+    }
+
+    .custom-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .pill-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-success);
+    }
+
+    .pill-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--accent-danger);
+    }
+
+    .pill-warning {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--accent-warning);
+    }
+
+    .pill-info {
+      background: rgba(6, 182, 212, 0.1);
+      color: var(--accent-secondary);
+    }
+
+    .concept-tag {
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: #c7d2fe;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-block;
+      margin: 2px;
+    }
+
+    @media (max-width: 1024px) {
+      .chart-panel-large, .chart-panel-medium {
+        grid-column: span 12;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="bg-glow-left"></div>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">N</div>
+      <div class="logo-title">
+        <h1>Nephele Analytics</h1>
+        <p>Platform Optimization Engine</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="/admin" class="btn btn-secondary">Admin Dashboard</a>
+      <button onclick="triggerExport('pdf')" class="btn btn-primary">Export PDF Report</button>
+      <button onclick="triggerExport('json')" class="btn btn-secondary">JSON</button>
+      <button onclick="triggerExport('csv')" class="btn btn-secondary">CSV</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Summary Cards -->
+    <div class="metrics-summary-grid">
+      <div class="metric-card">
+        <div class="metric-title">Average Domain Mastery</div>
+        <div class="metric-value" id="val-mastery">0.0%</div>
+        <div class="metric-sub">Across all conceptual evaluations</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Average Interview Duration</div>
+        <div class="metric-value" id="val-duration">0m 0s</div>
+        <div class="metric-sub">For completed assessment paths</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Candidates Enrolled</div>
+        <div class="metric-value" id="val-candidates">0</div>
+        <div class="metric-sub">Total parsed portfolio resumes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">Concept Traversal Density</div>
+        <div class="metric-value" id="val-density">0.0%</div>
+        <div class="metric-sub">Knowledge graph connectivity</div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-layout">
+      <!-- Comparative Performance Chart -->
+      <div class="glass-panel chart-panel-large">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Concept Mastery Profiles</h2>
+            <span class="panel-subtitle">Success and failure traversal frequencies</span>
+          </div>
+        </div>
+        <div style="height: 350px; position: relative;">
+          <canvas id="conceptPerformanceChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Difficulty Distributions -->
+      <div class="glass-panel chart-panel-medium">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Concept Difficulties</h2>
+            <span class="panel-subtitle">Inferred index levels</span>
+          </div>
+        </div>
+        <div style="height: 350px; position: relative;">
+          <canvas id="difficultyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Edge Relationships -->
+      <div class="glass-panel panel-full">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Traversal Edge Strength & Suggestions</h2>
+            <span class="panel-subtitle">Data-driven recommendations for structural modifications</span>
+          </div>
+        </div>
+        <table class="custom-table" id="edge-table">
+          <thead>
+            <tr>
+              <th>Source Concept</th>
+              <th>Target Concept</th>
+              <th>Edge Co-Mastery Strength</th>
+              <th>Traversal Hits</th>
+              <th>Recommendation Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-muted);">Awaiting pipeline execution data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Misconceptions & Question Effectiveness -->
+      <div class="glass-panel chart-panel-large">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Question Effectiveness Ratings</h2>
+            <span class="panel-subtitle">Performance breakdown of question bank templates</span>
+          </div>
+        </div>
+        <table class="custom-table" id="question-table">
+          <thead>
+            <tr>
+              <th>Question Template ID</th>
+              <th>Success Rate</th>
+              <th>Avg Latency</th>
+              <th>Responses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted);">No question metrics collected yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Common Misconceptions -->
+      <div class="glass-panel chart-panel-medium">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Common Misconceptions</h2>
+            <span class="panel-subtitle">Signals frequently missed by candidates</span>
+          </div>
+        </div>
+        <table class="custom-table" id="misconception-table">
+          <thead>
+            <tr>
+              <th>Concept</th>
+              <th>Missed Signal / Rubric Point</th>
+              <th>Freq</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="3" style="text-align: center; color: var(--text-muted);">No misconception patterns mined.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let conceptChart = null;
+    let difficultyChart = null;
+
+    async function fetchAnalytics() {
+      try {
+        const response = await fetch('/api/analytics');
+        if (!response.ok) throw new Error("API error");
+        const data = await response.json();
+        
+        // Populate KPI cards
+        document.getElementById('val-mastery').innerText = (data.average_domain_mastery * 100).toFixed(1) + '%';
+        const durMin = Math.floor(data.average_interview_duration_seconds / 60);
+        const durSec = Math.round(data.average_interview_duration_seconds % 60);
+        document.getElementById('val-duration').innerText = `${durMin}m ${durSec}s`;
+        document.getElementById('val-candidates').innerText = data.candidate_trends_summary.total_candidates;
+        
+        // Load graph density from secondary API if available, else static default
+        const graphRes = await fetch('/api/admin/graph-analytics');
+        if (graphRes.ok) {
+          const gData = await graphRes.json();
+          if (gData.length > 0) {
+            document.getElementById('val-density').innerText = (gData[0].density * 100).toFixed(1) + '%';
+          }
+        }
+
+        // Render Concept Performance Bar Chart
+        renderConceptPerformanceChart(data.most_failed_concepts, data.most_successful_concepts);
+
+        // Render Inferred Difficulties Pie/Doughnut Chart
+        renderDifficultyChart(data.concept_difficulty_rankings);
+
+        // Populate Edge Strengths
+        populateEdgeTable(data.relationship_strength_rankings);
+
+        // Populate Questions
+        populateQuestionTable(data.question_effectiveness_rankings);
+
+        // Populate Misconceptions
+        populateMisconceptionTable(data.most_common_misconceptions);
+
+      } catch (err) {
+        console.error("Error fetching analytics data:", err);
+      }
+    }
+
+    function renderConceptPerformanceChart(failed, successful) {
+      const ctx = document.getElementById('conceptPerformanceChart').getContext('2d');
+      
+      const labels = [];
+      const failRates = [];
+      const successRates = [];
+
+      // Combine lists to display comparative metrics
+      const conceptsMap = {};
+      failed.forEach(item => {
+        conceptsMap[item.concept] = { fail: item.failure_rate, success: 0 };
+      });
+      successful.forEach(item => {
+        if (!conceptsMap[item.concept]) {
+          conceptsMap[item.concept] = { fail: 0, success: item.success_rate };
+        } else {
+          conceptsMap[item.concept].success = item.success_rate;
+        }
+      });
+
+      Object.entries(conceptsMap).forEach(([concept, score]) => {
+        labels.push(concept);
+        failRates.push(score.fail * 100);
+        successRates.push(score.success * 100);
+      });
+
+      if (conceptChart) conceptChart.destroy();
+
+      conceptChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Success Rate (%)',
+              data: successRates,
+              backgroundColor: '#10b981',
+              borderRadius: 6
+            },
+            {
+              label: 'Failure Rate (%)',
+              data: failRates,
+              backgroundColor: '#ef4444',
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { labels: { color: '#f3f4f6' } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ca3af' } },
+            y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ca3af' } }
+          }
+        }
+      });
+    }
+
+    function renderDifficultyChart(rankings) {
+      const ctx = document.getElementById('difficultyChart').getContext('2d');
+      
+      let basic = 0;
+      let intermediate = 0;
+      let advanced = 0;
+
+      rankings.forEach(item => {
+        if (item.classification === 'basic') basic++;
+        else if (item.classification === 'intermediate') intermediate++;
+        else advanced++;
+      });
+
+      if (difficultyChart) difficultyChart.destroy();
+
+      difficultyChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Basic', 'Intermediate', 'Advanced'],
+          datasets: [{
+            data: [basic, intermediate, advanced],
+            backgroundColor: ['#06b6d4', '#f59e0b', '#6366f1'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { 
+              position: 'bottom',
+              labels: { color: '#f3f4f6' } 
+            }
+          }
+        }
+      });
+    }
+
+    function populateEdgeTable(edges) {
+      const tbody = document.getElementById('edge-table').querySelector('tbody');
+      tbody.innerHTML = '';
+
+      if (edges.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No edges traversed yet.</td></tr>`;
+        return;
+      }
+
+      edges.forEach(edge => {
+        let actionClass = 'pill-info';
+        let actionText = 'Retain';
+
+        if (edge.strength >= 0.85 && edge.traversal_count >= 3) {
+          actionClass = 'pill-success';
+          actionText = 'Strengthen Edge';
+        } else if (edge.strength < 0.40 && edge.traversal_count >= 3) {
+          actionClass = 'pill-danger';
+          actionText = 'Weaken/Weigh Down';
+        }
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><b>${edge.source}</b></td>
+          <td><b>${edge.target}</b></td>
+          <td>${(edge.strength * 100).toFixed(1)}%</td>
+          <td>${edge.traversal_count}</td>
+          <td><span class="pill ${actionClass}">${actionText}</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function populateQuestionTable(questions) {
+      const tbody = document.getElementById('question-table').querySelector('tbody');
+      tbody.innerHTML = '';
+
+      if (questions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No question metrics recorded.</td></tr>`;
+        return;
+      }
+
+      questions.slice(0, 5).forEach(q => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><code>${q.question_id}</code></td>
+          <td><b>${(q.success_rate * 100).toFixed(1)}%</b></td>
+          <td>${q.average_latency.toFixed(1)}s</td>
+          <td>${q.total_responses}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function populateMisconceptionTable(misconceptions) {
+      const tbody = document.getElementById('misconception-table').querySelector('tbody');
+      tbody.innerHTML = '';
+
+      if (misconceptions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: var(--text-muted);">No misconceptions logged.</td></tr>`;
+        return;
+      }
+
+      misconceptions.slice(0, 5).forEach(m => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><span class="concept-tag">${m.concept}</span></td>
+          <td><font color="#ef4444">${m.misconception}</font></td>
+          <td><b>${m.frequency}</b></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function triggerExport(format) {
+      window.open(`/api/reports/analytics/export?format=${format}`, '_blank');
+    }
+
+    // Initial load
+    fetchAnalytics();
+    // Refresh every 30 seconds
+    setInterval(fetchAnalytics, 30000);
+  </script>
+</body>
+</html>

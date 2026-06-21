@@ -9,3 +9,10 @@ groq
 assemblyai
 sounddevice
 websocket-client
+sqlalchemy
+alembic
+psycopg2-binary
+chromadb
+reportlab
+pytest
+pytest-cov

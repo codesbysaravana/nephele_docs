@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nephele Administration Panel</title>
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #080c14;
+      --panel-bg: rgba(255, 255, 255, 0.02);
+      --panel-border: rgba(255, 255, 255, 0.07);
+      --glass-glow: rgba(79, 70, 229, 0.12);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-primary: #4f46e5; /* Indigo */
+      --accent-secondary: #0891b2; /* Cyan */
+      --accent-success: #059669; /* Emerald */
+      --accent-danger: #dc2626; /* Rose */
+      --accent-warning: #d97706; /* Amber */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    /* Ambient background glow */
+    .bg-glow {
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(79, 70, 229, 0.1) 0%, rgba(0,0,0,0) 70%);
+      top: -300px;
+      left: -100px;
+      z-index: -1;
+      filter: blur(90px);
+    }
+
+    header {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 25px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      font-size: 18px;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .logo-title h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-title p {
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, var(--accent-primary), #6366f1);
+      color: white;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      border-color: var(--panel-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 30px auto 0;
+      padding: 0 20px;
+    }
+
+    /* KPI Grid */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .kpi-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: relative;
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: white;
+    }
+
+    .kpi-indicator {
+      position: absolute;
+      width: 6px;
+      height: 25px;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Admin layout structure */
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 25px;
+    }
+
+    .panel-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .glass-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      padding-bottom: 12px;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Search interface */
+    .search-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 15px;
+      color: white;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* Table styling */
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .admin-table th {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .admin-table td {
+      font-size: 13px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .admin-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-active { background: rgba(16, 185, 129, 0.1); color: var(--accent-success); }
+    .status-paused { background: rgba(245, 158, 11, 0.1); color: var(--accent-warning); }
+    .status-completed { background: rgba(79, 70, 229, 0.1); color: #a5b4fc; }
+    .status-failed { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); }
+
+    /* Health sidebar widgets */
+    .sidebar-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .health-status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .health-label {
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .health-value {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .indicator-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    .dot-green { background-color: var(--accent-success); box-shadow: 0 0 8px var(--accent-success); }
+    .dot-yellow { background-color: var(--accent-warning); box-shadow: 0 0 8px var(--accent-warning); }
+    .dot-red { background-color: var(--accent-danger); box-shadow: 0 0 8px var(--accent-danger); }
+
+    .candidate-expanded-view {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px dashed var(--panel-border);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .candidate-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">N</div>
+      <div class="logo-title">
+        <h1>Nephele Control</h1>
+        <p>Administration Portal</p>
+      </div>
+    </div>
+    <div class="nav-actions">
+      <a href="/analytics" class="btn btn-secondary">Analytics Dashboard</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Overview Stats -->
+    <div class="overview-grid">
+      <div class="kpi-card">
+        <div class="kpi-indicator" style="background-color: var(--accent-primary);"></div>
+        <div class="kpi-title">Total Candidates</div>
+        <div class="kpi-value" id="kpi-candidates">0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-indicator" style="background-color: var(--accent-secondary);"></div>
+        <div class="kpi-title">Active Assessments</div>
+        <div class="kpi-value" id="kpi-active">0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-indicator" style="background-color: var(--accent-success);"></div>
+        <div class="kpi-title">Concluded Assessments</div>
+        <div class="kpi-value" id="kpi-completed">0</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-indicator" style="background-color: var(--accent-warning);"></div>
+        <div class="kpi-title">Avg Mastery Rating</div>
+        <div class="kpi-value" id="kpi-rating">0.0%</div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-layout">
+      
+      <!-- Left Panel List -->
+      <div class="panel-container">
+        <!-- Candidate Search Panel -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Candidate Directory</h2>
+          </div>
+          <div class="search-bar">
+            <input type="text" id="search-q" class="search-input" placeholder="Search by name, email, or candidate ID..." oninput="handleSearch()">
+            <button class="btn btn-primary" onclick="fetchCandidates()">Search</button>
+          </div>
+          
+          <table class="admin-table" id="candidates-table">
+            <thead>
+              <tr>
+                <th>Candidate Details</th>
+                <th>Active Domain</th>
+                <th>Assessment Status</th>
+                <th>Last Ping</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align: center; color: var(--text-muted);">Loading candidates...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Concept traversal tracking -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Concept Traversal Logs</h2>
+          </div>
+          <table class="admin-table" id="concept-logs-table">
+            <thead>
+              <tr>
+                <th>Concept Identifier</th>
+                <th>Responses Graded</th>
+                <th>Average Mastery</th>
+                <th>Average Grading Conf</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted);">No logs traversed yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Evolution Recommendations -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Structural Optimization Proposals</h2>
+          </div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+            Mined recommendations for graph edges requiring review based on traversal failures:
+          </div>
+          <table class="admin-table" id="evolution-recs-table">
+            <thead>
+              <tr>
+                <th>Source Concept</th>
+                <th>Target Concept</th>
+                <th>Co-occurrence Strength</th>
+                <th>Proposed Modification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted);">No recommendations calculated yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Right Panel Health & Config -->
+      <div class="sidebar-widget">
+        <!-- Health widget -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">System Status Logs</h2>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">Database Connection</span>
+            <span class="health-value" id="health-db"><span class="indicator-dot dot-yellow"></span>PINGING</span>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">ChromaDB Node</span>
+            <span class="health-value" id="health-chroma"><span class="indicator-dot dot-yellow"></span>PINGING</span>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">Gemini API Key</span>
+            <span class="health-value" id="health-gemini"><span class="indicator-dot dot-yellow"></span>CHECKING</span>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">Groq API Key</span>
+            <span class="health-value" id="health-groq"><span class="indicator-dot dot-yellow"></span>CHECKING</span>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">AssemblyAI Key</span>
+            <span class="health-value" id="health-assembly"><span class="indicator-dot dot-yellow"></span>CHECKING</span>
+          </div>
+          <div class="health-status-row">
+            <span class="health-label">Runtime Sessions</span>
+            <span class="health-value" id="health-runtime">0 active</span>
+          </div>
+        </div>
+
+        <!-- Graph stats widget -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h2 class="panel-title">Knowledge Graph Index</h2>
+          </div>
+          <div id="graph-index-container" style="font-size: 13px;">
+            <div style="color: var(--text-muted);">Loading graph structures...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function fetchOverview() {
+      try {
+        const res = await fetch('/api/admin/overview');
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        document.getElementById('kpi-candidates').innerText = data.total_candidates;
+        document.getElementById('kpi-active').innerText = data.active_sessions;
+        document.getElementById('kpi-completed').innerText = data.completed_sessions;
+        document.getElementById('kpi-rating').innerText = (data.average_system_mastery * 100).toFixed(1) + '%';
+      } catch (err) {
+        console.error("Overview error:", err);
+      }
+    }
+
+    async function fetchCandidates() {
+      const q = document.getElementById('search-q').value;
+      const url = q ? `/api/admin/candidates?q=${encodeURIComponent(q)}` : '/api/admin/candidates';
+      
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        const tbody = document.getElementById('candidates-table').querySelector('tbody');
+        tbody.innerHTML = '';
+        
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No candidates match search query.</td></tr>`;
+          return;
+        }
+
+        data.forEach(cand => {
+          const row = document.createElement('tr');
+          const lastActive = cand.session ? new Date(cand.session.last_active).toLocaleString() : 'N/A';
+          const domain = cand.session ? cand.session.domain : 'N/A';
+          
+          let stateBadge = '<span class="status-badge status-paused">No Session</span>';
+          if (cand.session) {
+            const state = cand.session.state.toLowerCase();
+            stateBadge = `<span class="status-badge status-${state}">${cand.session.state}</span>`;
+          }
+
+          row.innerHTML = `
+            <td>
+              <div style="font-weight: 700; color: white;">${cand.name}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${cand.email}</div>
+              <div style="font-size: 10px; color: var(--accent-secondary); margin-top: 2px;">ID: ${cand.id}</div>
+            </td>
+            <td><b>${domain}</b></td>
+            <td>${stateBadge}</td>
+            <td><font size="1" color="#9ca3af">${lastActive}</font></td>
+            <td>
+              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="toggleDetails('${cand.id}')">View Details</button>
+            </td>
+          `;
+
+          const detailsRow = document.createElement('tr');
+          detailsRow.id = `details-${cand.id}`;
+          detailsRow.style.display = 'none';
+          
+          let actionButtons = '';
+          if (cand.has_report) {
+            actionButtons = `
+              <div class="candidate-actions">
+                <a href="/api/reports/${cand.id}/export?format=pdf" target="_blank" class="btn btn-primary" style="padding: 5px 10px; font-size: 11px;">PDF Report</a>
+                <a href="/api/reports/${cand.id}/export?format=json" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;">JSON</a>
+                <a href="/api/reports/${cand.id}/export?format=csv" target="_blank" class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;">CSV</a>
+              </div>
+            `;
+          } else if (cand.session) {
+            actionButtons = `
+              <div class="candidate-actions">
+                <button class="btn btn-danger" style="padding: 5px 10px; font-size: 11px;" onclick="forceEndSession('${cand.id}')">Force End & Gen Report</button>
+              </div>
+            `;
+          }
+
+          detailsRow.innerHTML = `
+            <td colspan="5">
+              <div class="candidate-expanded-view" style="display: block;">
+                <p><b>Report Summary:</b> ${cand.report_summary || 'Assessment ongoing or incomplete.'}</p>
+                ${actionButtons}
+              </div>
+            </td>
+          `;
+
+          tbody.appendChild(row);
+          tbody.appendChild(detailsRow);
+        });
+      } catch (err) {
+        console.error("Candidates fetch error:", err);
+      }
+    }
+
+    function toggleDetails(id) {
+      const el = document.getElementById(`details-${id}`);
+      el.style.display = el.style.display === 'none' ? 'table-row' : 'none';
+    }
+
+    async function forceEndSession(candidateId) {
+      if (!confirm("Are you sure you want to conclude this interview session manually?")) return;
+      try {
+        const res = await fetch(`/api/reports/${candidateId}/export?format=pdf`);
+        if (res.ok) {
+          alert("Interview session successfully concluded and report generated!");
+          fetchOverview();
+          fetchCandidates();
+        } else {
+          alert("Failed to force end session.");
+        }
+      } catch (err) {
+        alert("Error connecting to API.");
+      }
+    }
+
+    async function handleSearch() {
+      fetchCandidates();
+    }
+
+    async function fetchConceptLogs() {
+      try {
+        const res = await fetch('/api/admin/concept-analytics');
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        const tbody = document.getElementById('concept-logs-table').querySelector('tbody');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No evaluations logged yet.</td></tr>`;
+          return;
+        }
+
+        data.forEach(row => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><b>${row.concept_id}</b></td>
+            <td>${row.total_evaluations}</td>
+            <td><b>${(row.average_mastery * 100).toFixed(1)}%</b></td>
+            <td>${(row.average_confidence * 100).toFixed(1)}%</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Concept analytics error:", err);
+      }
+    }
+
+    async function fetchEvolutionRecommendations() {
+      try {
+        const res = await fetch('/api/admin/evolution-reports?domain=machine_learning');
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        const tbody = document.getElementById('evolution-recs-table').querySelector('tbody');
+        tbody.innerHTML = '';
+
+        const recs = data.existing_edge_recommendations || [];
+        if (recs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No recommendations calculated yet.</td></tr>`;
+          return;
+        }
+
+        recs.forEach(row => {
+          const tr = document.createElement('tr');
+          const isWeaken = row.recommendation.toLowerCase().includes('weaken');
+          const badgeClass = isWeaken ? 'status-failed' : 'status-active';
+          
+          tr.innerHTML = `
+            <td><b>${row.source}</b></td>
+            <td><b>${row.target}</b></td>
+            <td>${(row.strength * 100).toFixed(1)}%</td>
+            <td><span class="status-badge ${badgeClass}">${row.recommendation}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error("Evolution reports error:", err);
+      }
+    }
+
+    async function fetchHealth() {
+      try {
+        const res = await fetch('/api/admin/system-health');
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        updateDot('health-db', data.database === 'healthy');
+        updateDot('health-chroma', data.chromadb === 'healthy');
+        updateDot('health-gemini', data.providers.Gemini);
+        updateDot('health-groq', data.providers.Groq);
+        updateDot('health-assembly', data.providers.AssemblyAI);
+        
+        // Count active runtime sessions
+        const rRes = await fetch('/api/health/runtime');
+        if (rRes.ok) {
+          const rData = await rRes.json();
+          document.getElementById('health-runtime').innerText = `${rData.active_sessions} active, ${rData.completed_sessions} completed`;
+        }
+      } catch (err) {
+        console.error("Health fetch error:", err);
+      }
+    }
+
+    function updateDot(elementId, healthy) {
+      const el = document.getElementById(elementId);
+      if (healthy) {
+        el.innerHTML = `<span class="indicator-dot dot-green"></span>ONLINE`;
+      } else {
+        el.innerHTML = `<span class="indicator-dot dot-red"></span>OFFLINE`;
+      }
+    }
+
+    async function fetchGraphsIndex() {
+      try {
+        const res = await fetch('/api/admin/graph-analytics');
+        if (!res.ok) throw new Error("API error");
+        const data = await res.json();
+        
+        const container = document.getElementById('graph-index-container');
+        container.innerHTML = '';
+
+        data.forEach(g => {
+          const div = document.createElement('div');
+          div.style.marginBottom = '12px';
+          div.innerHTML = `
+            <div style="font-weight: 700; color: white;">${g.domain.replace('_', ' ').toUpperCase()}</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+              Concepts: <b>${g.total_concepts}</b>  |  Edges: <b>${g.total_edges}</b><br>
+              Density Index: <b>${(g.density * 100).toFixed(2)}%</b>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("Graph index error:", err);
+      }
+    }
+
+    // Initialize Page
+    fetchOverview();
+    fetchCandidates();
+    fetchConceptLogs();
+    fetchEvolutionRecommendations();
+    fetchHealth();
+    fetchGraphsIndex();
+
+    // Auto Refresh stats
+    setInterval(() => {
+      fetchOverview();
+      fetchHealth();
+    }, 20000);
+  </script>
+</body>
+</html>

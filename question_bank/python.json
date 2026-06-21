@@ -1,0 +1,56 @@
+[
+  {
+    "concept": "Decorators",
+    "difficulty": "basic",
+    "question": "What is a Python decorator and how does it allow you to modify the behavior of a function without changing its source code?",
+    "followups": [
+      "How do you pass arguments to a decorated function using *args and **kwargs?",
+      "Can you write a simple decorator that logs when a function starts and finishes?"
+    ]
+  },
+  {
+    "concept": "Decorators",
+    "difficulty": "intermediate",
+    "question": "How do you implement decorators that accept arguments themselves, and why is `functools.wraps` essential when writing custom decorators?",
+    "followups": [
+      "What happens to a function's docstring and name if you do not use wraps?",
+      "How do you stack multiple decorators on a single function and in what order are they executed?"
+    ]
+  },
+  {
+    "concept": "Decorators",
+    "difficulty": "advanced",
+    "question": "Explain how class-based decorators with state are implemented, and how you can decorate methods inside class definitions without breaking descriptor binding.",
+    "followups": [
+      "How does the __get__ method of descriptors play a role in class method decoration?",
+      "Can you build a decorator that dynamically updates a class's dictionary upon initialization?"
+    ]
+  },
+  {
+    "concept": "Generators",
+    "difficulty": "basic",
+    "question": "What is a Python generator, how does the `yield` keyword work, and how do generators differ from normal functions in memory usage?",
+    "followups": [
+      "What exception is raised when a generator runs out of items?",
+      "How do you create a generator using generator expressions?"
+    ]
+  },
+  {
+    "concept": "Generators",
+    "difficulty": "intermediate",
+    "question": "Explain how two-way communication works in generators using `send()`, `throw()`, and `close()`. How do you initialize a generator before calling send?",
+    "followups": [
+      "Why does a generator need to be primed (e.g. calling next()) before calling send?",
+      "How does yielding from a generator catch exceptions thrown into it?"
+    ]
+  },
+  {
+    "concept": "Generators",
+    "difficulty": "advanced",
+    "question": "Discuss the details of the `yield from` expression in Python. How does it delegate generator control, and how does it handle exceptions and return values?",
+    "followups": [
+      "How does yield from facilitate co-routine delegation in asynchronous frameworks?",
+      "What is the difference between a generator and an awaitable in Python?"
+    ]
+  }
+]

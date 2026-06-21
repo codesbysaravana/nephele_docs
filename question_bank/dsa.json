@@ -1,0 +1,56 @@
+[
+  {
+    "concept": "Arrays",
+    "difficulty": "basic",
+    "question": "What is an array, how are its elements stored in memory, and what is the time complexity of element access by index?",
+    "followups": [
+      "Why is accessing an array element by index O(1) in time?",
+      "What is the difference between a static array and a dynamic array?"
+    ]
+  },
+  {
+    "concept": "Arrays",
+    "difficulty": "intermediate",
+    "question": "How do dynamic arrays (like Python lists or ArrayLists in Java) resize themselves when they run out of capacity, and what is the amortized cost of insertion?",
+    "followups": [
+      "What does amortized time complexity mean in the context of dynamic arrays?",
+      "How does the choice of growth factor (e.g. 1.5 vs 2) affect memory and CPU tradeoffs?"
+    ]
+  },
+  {
+    "concept": "Arrays",
+    "difficulty": "advanced",
+    "question": "Explain the cache locality benefits of contiguous arrays compared to linked structures, and how CPU prefetching optimizes array operations.",
+    "followups": [
+      "How do L1/L2 cache misses affect array iteration speed vs linked list iteration?",
+      "What is CPU cache line size and how does array alignment match it?"
+    ]
+  },
+  {
+    "concept": "Binary Search",
+    "difficulty": "basic",
+    "question": "What is Binary Search, what condition must the input array satisfy for it to work, and what is its time complexity?",
+    "followups": [
+      "Why is the input array required to be sorted?",
+      "How do you calculate the mid point of the array safely to prevent integer overflow?"
+    ]
+  },
+  {
+    "concept": "Binary Search",
+    "difficulty": "intermediate",
+    "question": "How do you modify Binary Search to find the first or last occurrence of a duplicate key in a sorted array?",
+    "followups": [
+      "What is the condition to break the loop when searching for boundaries?",
+      "How do you perform binary search on a rotated sorted array?"
+    ]
+  },
+  {
+    "concept": "Binary Search",
+    "difficulty": "advanced",
+    "question": "Discuss how binary search can be applied to monotonic functions or values in continuous spaces (binary search on answer).",
+    "followups": [
+      "Give an example problem where you binary search over the search space of solutions rather than array indices.",
+      "How do you determine the precision threshold when binary searching on floating-point solutions?"
+    ]
+  }
+]

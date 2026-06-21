@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-client = Groq(api_key=GROQ_API_KEY)
+client = Groq(api_key=GROQ_API_KEY or "MOCK_KEY")
 
 SYSTEM_PROMPT = """
 You are Nephele, a professional AI Interview Assistant.

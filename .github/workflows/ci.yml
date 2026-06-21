@@ -1,0 +1,61 @@
+name: Nephele CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, phase6f ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: nephele
+          POSTGRES_PASSWORD: nephele_pass
+          POSTGRES_DB: nephele_db
+        ports:
+          - 5432:5432
+        # Set health checks to wait for postgres to stand up
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint and Syntax compile validation
+        run: |
+          python -m compileall app/
+          python -m compileall graph_evolution/
+          python -m compileall runtime/
+
+      - name: Validate database schema migrations
+        env:
+          DATABASE_URL: postgresql://nephele:nephele_pass@localhost:5432/nephele_db
+        run: |
+          alembic upgrade head
+
+      - name: Execute pytest test suite
+        env:
+          DATABASE_URL: postgresql://nephele:nephele_pass@localhost:5432/nephele_db
+        run: |
+          # Ignore the headless vision test which requires mediapipe camera dependencies
+          pytest --ignore=tests/vision/test_integration.py --cov=. --cov-report=term

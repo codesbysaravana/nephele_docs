@@ -1,0 +1,34 @@
+{
+  "machine_learning": [
+    "machine learning",
+    "ml",
+    "ml engineer",
+    "ai engineer",
+    "data science",
+    "data analytics",
+    "data scientist"
+  ],
+  "python": [
+    "python",
+    "python developer",
+    "python engineer"
+  ],
+  "sql": [
+    "sql",
+    "postgresql",
+    "mysql",
+    "database"
+  ],
+  "dsa": [
+    "dsa",
+    "data structures",
+    "algorithms",
+    "problem solving"
+  ],
+  "system_design": [
+    "system design",
+    "distributed systems",
+    "scalability",
+    "architecture"
+  ]
+}

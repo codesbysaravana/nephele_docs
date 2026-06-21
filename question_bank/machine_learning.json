@@ -1,0 +1,56 @@
+[
+  {
+    "concept": "Supervised Learning",
+    "difficulty": "basic",
+    "question": "Can you explain the core principle of Supervised Learning, and how labeled data guides the model optimization process?",
+    "followups": [
+      "How does the model evaluate its predictions against the labels during training?",
+      "Can you give an example of a simple labeled dataset and how a model would use it?"
+    ]
+  },
+  {
+    "concept": "Supervised Learning",
+    "difficulty": "intermediate",
+    "question": "What are some common classification and regression algorithms used in supervised learning, and how do they establish decision boundaries?",
+    "followups": [
+      "How does a decision tree establish boundaries compared to a support vector machine?",
+      "What happens when the decision boundaries are highly non-linear?"
+    ]
+  },
+  {
+    "concept": "Supervised Learning",
+    "difficulty": "advanced",
+    "question": "How do you formulate the loss function optimization for supervised learning mathematically, and how do you handle noise in label distributions?",
+    "followups": [
+      "What is the effect of label smoothing on the optimization landscape?",
+      "How do loss formulations differ between classification and regression under noisy labels?"
+    ]
+  },
+  {
+    "concept": "Overfitting",
+    "difficulty": "basic",
+    "question": "What is overfitting, and what indicators would you look for in training and validation loss curves to identify it?",
+    "followups": [
+      "How would you detect overfitting without looking at the loss curves?",
+      "What is the simplest way to reduce overfitting in a model?"
+    ]
+  },
+  {
+    "concept": "Overfitting",
+    "difficulty": "intermediate",
+    "question": "Explain how model capacity and complexity relate to the bias-variance tradeoff and the risk of overfitting.",
+    "followups": [
+      "How do you determine the optimal capacity for a deep learning model?",
+      "Why does cross-validation help in estimating the generalization error?"
+    ]
+  },
+  {
+    "concept": "Overfitting",
+    "difficulty": "advanced",
+    "question": "Discuss how structural risk minimization and regularization techniques mathematically restrict hypothesis space to prevent overfitting.",
+    "followups": [
+      "How does weight decay in neural networks relate to Ridge regression?",
+      "Explain the concept of generalization bounds and Rademacher complexity."
+    ]
+  }
+]

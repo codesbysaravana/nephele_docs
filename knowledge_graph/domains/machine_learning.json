@@ -1,0 +1,12 @@
+{
+  "domain_id": "machine_learning",
+  "name": "Machine Learning",
+  "description": "Core machine learning concepts, interview anchors, and domain entry points.",
+  "version": "1.0.0",
+  "tags": ["ml", "ai", "statistics"],
+  "entry_concepts": ["Supervised Learning", "Train-Test Split"],
+  "metadata": {
+    "purpose": "domain_activation",
+    "default_starting_depth": 0
+  }
+}
