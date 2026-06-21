@@ -1,0 +1,51 @@
+{
+  "concept": "Overfitting",
+  "required_signals": [
+    {
+      "signal_id": "memorization",
+      "description": "Model memorizes training patterns or noise",
+      "keywords": [
+        "memorizes training data",
+        "memorization",
+        "fit noise",
+        "overlearns"
+      ],
+      "weight": 0.35
+    },
+    {
+      "signal_id": "poor_generalization",
+      "description": "Model fails to generalize to unseen/new data",
+      "keywords": [
+        "fails to generalize",
+        "poor generalization",
+        "doesn't generalize",
+        "new data",
+        "unseen data"
+      ],
+      "weight": 0.40
+    },
+    {
+      "signal_id": "training_vs_unseen",
+      "description": "Contrasts training performance with test/validation performance",
+      "keywords": [
+        "training data",
+        "test data",
+        "validation data",
+        "training accuracy high"
+      ],
+      "weight": 0.25
+    }
+  ],
+  "optional_signals": [
+    {
+      "signal_id": "high_variance",
+      "description": "Mentions high variance behavior",
+      "keywords": [
+        "high variance",
+        "variance"
+      ],
+      "weight": 0.15
+    }
+  ],
+  "reference_answer": "Overfitting happens when a model memorizes training data, including noise, and performs poorly on unseen data despite strong training performance."
+}

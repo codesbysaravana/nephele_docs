@@ -1,0 +1,506 @@
+{
+  "graph_id": "ml-core-graph",
+  "version": "1.0.0",
+  "metadata": {
+    "domain": "Machine Learning",
+    "notes": "Metadata-only concepts, edge-only relationships, numeric difficulty, reserved future learning fields."
+  },
+  "domains": [
+    {
+      "domain_id": "ml",
+      "name": "Machine Learning",
+      "description": "Core machine learning concepts spanning data preparation, model selection, regularization, and ensemble methods.",
+      "version": "1.0.0",
+      "tags": ["ml", "ai", "statistics"],
+      "entry_concepts": ["ml_001", "ml_002"],
+      "metadata": {
+        "default_starting_depth": 0,
+        "resume_activation_hint": "start from supervised learning or train-test split"
+      }
+    }
+  ],
+  "concepts": [
+    {
+      "concept_id": "ml_001",
+      "concept_name": "Supervised Learning",
+      "domain_id": "ml",
+      "difficulty": 0.10,
+      "description": "Learning from labeled examples to map inputs to outputs.",
+      "tags": ["learning-paradigm", "classification", "regression"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["Supervised learning always requires deep neural networks."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_002",
+      "concept_name": "Train-Test Split",
+      "domain_id": "ml",
+      "difficulty": 0.15,
+      "description": "Splitting data into training and evaluation subsets.",
+      "tags": ["data-preparation", "evaluation"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["Any random split is good enough for evaluation."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_003",
+      "concept_name": "Overfitting",
+      "domain_id": "ml",
+      "difficulty": 0.35,
+      "description": "When a model learns noise and performs poorly on unseen data.",
+      "tags": ["generalization", "bias-variance"],
+      "importance_weight": 1.00,
+      "estimated_question_count": 3,
+      "question_ids": [],
+      "common_failures": ["Confusing high training accuracy with good generalization."],
+      "common_misconceptions": ["More epochs always improve performance."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_004",
+      "concept_name": "Underfitting",
+      "domain_id": "ml",
+      "difficulty": 0.30,
+      "description": "When a model is too simple to capture patterns in the data.",
+      "tags": ["generalization", "bias-variance"],
+      "importance_weight": 0.85,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Using a model that is too constrained for the task."],
+      "common_misconceptions": ["Underfitting and overfitting are the same issue."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_005",
+      "concept_name": "Bias Variance Tradeoff",
+      "domain_id": "ml",
+      "difficulty": 0.55,
+      "description": "The balance between model simplicity and sensitivity to data.",
+      "tags": ["model-selection", "generalization"],
+      "importance_weight": 1.00,
+      "estimated_question_count": 3,
+      "question_ids": [],
+      "common_failures": ["Treating bias and variance as independent concerns."],
+      "common_misconceptions": ["Lower bias always means better models."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_006",
+      "concept_name": "Cross Validation",
+      "domain_id": "ml",
+      "difficulty": 0.40,
+      "description": "Estimating generalization by evaluating on multiple splits.",
+      "tags": ["evaluation", "model-selection"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Using cross validation incorrectly on time-dependent data."],
+      "common_misconceptions": ["Cross validation replaces the need for a test set."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_007",
+      "concept_name": "Regularization",
+      "domain_id": "ml",
+      "difficulty": 0.50,
+      "description": "Adding constraints or penalties to reduce overfitting.",
+      "tags": ["generalization", "penalty", "regularization"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 3,
+      "question_ids": [],
+      "common_failures": ["Over-penalizing and reducing useful signal."],
+      "common_misconceptions": ["Regularization always improves validation performance."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_008",
+      "concept_name": "L1 Regularization",
+      "domain_id": "ml",
+      "difficulty": 0.60,
+      "description": "Regularization that encourages sparsity via an absolute-value penalty.",
+      "tags": ["lasso", "sparsity", "regularization"],
+      "importance_weight": 0.75,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Thinking L1 and L2 are interchangeable in all cases."],
+      "common_misconceptions": ["L1 is only useful for classification models."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_009",
+      "concept_name": "L2 Regularization",
+      "domain_id": "ml",
+      "difficulty": 0.60,
+      "description": "Regularization that shrinks weights via a squared-value penalty.",
+      "tags": ["ridge", "weight-decay", "regularization"],
+      "importance_weight": 0.75,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Misstating how L2 affects large weights."],
+      "common_misconceptions": ["L2 forces exact zeros in weights."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_010",
+      "concept_name": "Random Forest",
+      "domain_id": "ml",
+      "difficulty": 0.65,
+      "description": "An ensemble of decision trees built with bagging and feature randomness.",
+      "tags": ["ensemble", "tree-based", "bagging"],
+      "importance_weight": 0.80,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Ignoring the role of bootstrap sampling."],
+      "common_misconceptions": ["Random forest is the same as boosting."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_011",
+      "concept_name": "XGBoost",
+      "domain_id": "ml",
+      "difficulty": 0.75,
+      "description": "A gradient boosting framework optimized for performance and scale.",
+      "tags": ["ensemble", "boosting", "gradient-boosting"],
+      "importance_weight": 0.85,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Confusing boosting with bagging."],
+      "common_misconceptions": ["XGBoost is only useful for tabular data because it is old."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_012",
+      "concept_name": "Feature Selection",
+      "domain_id": "ml",
+      "difficulty": 0.45,
+      "description": "Selecting relevant variables to improve performance and interpretability.",
+      "tags": ["preprocessing", "dimensionality-reduction"],
+      "importance_weight": 0.70,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Dropping features without checking multicollinearity or signal."],
+      "common_misconceptions": ["Feature selection and feature extraction are identical."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_013",
+      "concept_name": "Model Evaluation Metrics",
+      "domain_id": "ml",
+      "difficulty": 0.35,
+      "description": "Metrics such as accuracy, precision, recall, F1, and ROC-AUC.",
+      "tags": ["evaluation", "metrics"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Picking metrics that do not match the problem goal."],
+      "common_misconceptions": ["Accuracy is always the best metric."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_014",
+      "concept_name": "Dimensionality Reduction",
+      "domain_id": "ml",
+      "difficulty": 0.65,
+      "description": "Reducing feature space while preserving informative structure.",
+      "tags": ["pca", "feature-engineering"],
+      "importance_weight": 0.65,
+      "estimated_question_count": 2,
+      "question_ids": [],
+      "common_failures": ["Using reduction techniques without understanding information loss."],
+      "common_misconceptions": ["Dimensionality reduction is always the same as feature selection."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "ml_015",
+      "concept_name": "Hyperparameter Tuning",
+      "domain_id": "ml",
+      "difficulty": 0.70,
+      "description": "Searching for the best configuration of model parameters.",
+      "tags": ["optimization", "model-selection"],
+      "importance_weight": 0.85,
+      "estimated_question_count": 3,
+      "question_ids": [],
+      "common_failures": ["Tuning on test data."],
+      "common_misconceptions": ["More tuning always leads to a better real-world model."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e_001",
+      "source_id": "ml_001",
+      "target_id": "ml_002",
+      "relationship_type": "prerequisite",
+      "label": "supervised learning commonly starts with data splitting",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_002",
+      "source_id": "ml_002",
+      "target_id": "ml_003",
+      "relationship_type": "prerequisite",
+      "label": "train-test discipline exposes overfitting",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_003",
+      "source_id": "ml_002",
+      "target_id": "ml_004",
+      "relationship_type": "prerequisite",
+      "label": "split quality also reveals underfitting",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_004",
+      "source_id": "ml_003",
+      "target_id": "ml_005",
+      "relationship_type": "prerequisite",
+      "label": "overfitting leads into bias-variance reasoning",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_005",
+      "source_id": "ml_004",
+      "target_id": "ml_005",
+      "relationship_type": "prerequisite",
+      "label": "underfitting is the other side of the tradeoff",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_006",
+      "source_id": "ml_005",
+      "target_id": "ml_006",
+      "relationship_type": "prerequisite",
+      "label": "cross validation helps estimate the tradeoff",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_007",
+      "source_id": "ml_005",
+      "target_id": "ml_007",
+      "relationship_type": "prerequisite",
+      "label": "regularization is a response to overfitting",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_008",
+      "source_id": "ml_007",
+      "target_id": "ml_008",
+      "relationship_type": "prerequisite",
+      "label": "L1 is a specific regularization family",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_009",
+      "source_id": "ml_007",
+      "target_id": "ml_009",
+      "relationship_type": "prerequisite",
+      "label": "L2 is a specific regularization family",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_010",
+      "source_id": "ml_006",
+      "target_id": "ml_010",
+      "relationship_type": "prerequisite",
+      "label": "cross validation informs model choice",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_011",
+      "source_id": "ml_006",
+      "target_id": "ml_011",
+      "relationship_type": "prerequisite",
+      "label": "cross validation informs boosting selection",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_012",
+      "source_id": "ml_008",
+      "target_id": "ml_012",
+      "relationship_type": "prerequisite",
+      "label": "L1 encourages sparse feature selection",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_013",
+      "source_id": "ml_009",
+      "target_id": "ml_012",
+      "relationship_type": "prerequisite",
+      "label": "L2 influences shrinkage and feature selection",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_014",
+      "source_id": "ml_010",
+      "target_id": "ml_013",
+      "relationship_type": "prerequisite",
+      "label": "random forest output is measured with metrics",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_015",
+      "source_id": "ml_011",
+      "target_id": "ml_013",
+      "relationship_type": "prerequisite",
+      "label": "xgboost output is measured with metrics",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_016",
+      "source_id": "ml_012",
+      "target_id": "ml_014",
+      "relationship_type": "related",
+      "label": "feature selection and dimensionality reduction are adjacent ideas",
+      "directionality": "undirected",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_017",
+      "source_id": "ml_013",
+      "target_id": "ml_015",
+      "relationship_type": "prerequisite",
+      "label": "metrics inform hyperparameter tuning",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_018",
+      "source_id": "ml_014",
+      "target_id": "ml_015",
+      "relationship_type": "prerequisite",
+      "label": "reduced feature sets affect tuning choices",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_019",
+      "source_id": "ml_003",
+      "target_id": "ml_007",
+      "relationship_type": "related",
+      "label": "regularization is the primary response to overfitting",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_020",
+      "source_id": "ml_002",
+      "target_id": "ml_006",
+      "relationship_type": "related",
+      "label": "train-test split and cross validation are complementary evaluation strategies",
+      "directionality": "undirected",
+      "metadata": {}
+    }
+  ]
+}

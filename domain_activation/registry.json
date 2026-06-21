@@ -1,0 +1,29 @@
+{
+  "python": {"domain": "python", "weight": 0.50},
+  "django": {"domain": "python", "weight": 0.32},
+  "flask": {"domain": "python", "weight": 0.30},
+  "fastapi": {"domain": "python", "weight": 0.35},
+
+  "machine learning": {"domain": "machine_learning", "weight": 0.85},
+  "tensorflow": {"domain": "machine_learning", "weight": 0.32},
+  "pytorch": {"domain": "machine_learning", "weight": 0.32},
+  "scikit-learn": {"domain": "machine_learning", "weight": 0.28},
+  "xgboost": {"domain": "machine_learning", "weight": 0.32},
+  "lightgbm": {"domain": "machine_learning", "weight": 0.30},
+  "data science": {"domain": "machine_learning", "weight": 0.45},
+
+  "sql": {"domain": "sql", "weight": 0.45},
+  "postgresql": {"domain": "sql", "weight": 0.34},
+  "mysql": {"domain": "sql", "weight": 0.32},
+  "oracle": {"domain": "sql", "weight": 0.32},
+
+  "data structures": {"domain": "dsa", "weight": 0.55},
+  "algorithms": {"domain": "dsa", "weight": 0.55},
+  "leetcode": {"domain": "dsa", "weight": 0.25},
+
+  "system design": {"domain": "system_design", "weight": 0.60},
+  "microservices": {"domain": "system_design", "weight": 0.28},
+  "distributed systems": {"domain": "system_design", "weight": 0.35},
+  "kafka": {"domain": "system_design", "weight": 0.25},
+  "kubernetes": {"domain": "system_design", "weight": 0.24}
+}

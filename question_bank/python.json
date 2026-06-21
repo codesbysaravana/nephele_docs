@@ -1,0 +1,245 @@
+[
+  {
+    "concept": "Python Basics",
+    "difficulty": "basic",
+    "question": "What is Python's execution model and why is indentation syntactically significant compared to braces-based languages?",
+    "followups": [
+      "What happens if you mix spaces and tabs in indentation?",
+      "How does Python compile source code into bytecode?"
+    ]
+  },
+  {
+    "concept": "Python Basics",
+    "difficulty": "intermediate",
+    "question": "Explain the difference between Python's interactive shell execution vs script execution, and how the compilation step is managed automatically.",
+    "followups": [
+      "What is the purpose of pyc files in __pycache__?",
+      "How does sys.path affect module lookup?"
+    ]
+  },
+  {
+    "concept": "Python Basics",
+    "difficulty": "advanced",
+    "question": "Analyze how Python's runtime environment (CPython) handles bytecode execution using the evaluation loop, and the impact of the Global Interpreter Lock (GIL) on multi-core CPU bound tasks.",
+    "followups": [
+      "How does subinterpreters feature in modern Python address GIL limitations?",
+      "Explain compilation optimization flags like -O and -OO."
+    ]
+  },
+  {
+    "concept": "Variables",
+    "difficulty": "basic",
+    "question": "What does it mean that Python variables are references to objects rather than containers, and how does dynamic typing differ from static typing?",
+    "followups": [
+      "How does assigning a list to another variable affect both variables?",
+      "What is the output of id() function and what does it represent?"
+    ]
+  },
+  {
+    "concept": "Variables",
+    "difficulty": "intermediate",
+    "question": "Explain how Python binds variables to namespaces, and how variable scoping works inside nested blocks.",
+    "followups": [
+      "How do variable references behave in list comprehensions vs loops?",
+      "Explain binding operations in namespaces."
+    ]
+  },
+  {
+    "concept": "Variables",
+    "difficulty": "advanced",
+    "question": "Analyze the mechanics of name binding in python bytecode. Compare LOAD_FAST, LOAD_DEREF, and LOAD_GLOBAL execution instructions.",
+    "followups": [
+      "How does the local variable optimization inside functions work?",
+      "What is namespace dictionary pollution and how is it mitigated?"
+    ]
+  },
+  {
+    "concept": "Data Types",
+    "difficulty": "basic",
+    "question": "What is the difference between mutable and immutable data types in Python, and can you list examples of each?",
+    "followups": [
+      "Why is a tuple immutable while a list is mutable?",
+      "What happens when you attempt to use a mutable object as a dictionary key?"
+    ]
+  },
+  {
+    "concept": "Data Types",
+    "difficulty": "intermediate",
+    "question": "How does Python handle integers of arbitrary precision, and how are floats represented internally under IEEE 754 standard?",
+    "followups": [
+      "Explain object identity sharing for small integers (interning).",
+      "Why does 0.1 + 0.2 not equal 0.3 in standard floating point arithmetic?"
+    ]
+  },
+  {
+    "concept": "Data Types",
+    "difficulty": "advanced",
+    "question": "Detail the memory management of PyObject structures in CPython, and how integer and string interning mechanisms are implemented in memory.",
+    "followups": [
+      "Explain PyVarObject vs PyObject structural difference.",
+      "How does Python manage reference counters under the hood?"
+    ]
+  },
+  {
+    "concept": "Control Flow",
+    "difficulty": "basic",
+    "question": "How do conditional blocks and loop constructs work in Python, and what are the specific uses of break, continue, and pass statements?",
+    "followups": [
+      "What is the else clause in a for loop and when does it execute?",
+      "How do you iterate over dictionaries using items()?"
+    ]
+  },
+  {
+    "concept": "Control Flow",
+    "difficulty": "intermediate",
+    "question": "Explain the operation of Python's matching engine introduced in PEP 634 (structural pattern matching) compared to standard if-elif-else statements.",
+    "followups": [
+      "How do guard clauses work inside case statements?",
+      "What is wildcard matching in pattern matching?"
+    ]
+  },
+  {
+    "concept": "Control Flow",
+    "difficulty": "advanced",
+    "question": "Analyze how Python compiles complex nested conditional blocks and loops into jump bytecode instructions (COMPARE_OP, POP_JUMP_IF_FALSE).",
+    "followups": [
+      "How does the compiler optimize loop execution blocks?",
+      "Analyze structural pattern matching compiler optimization."
+    ]
+  },
+  {
+    "concept": "Functions",
+    "difficulty": "basic",
+    "question": "How do you define functions in Python, and how do parameter passing and *args / **kwargs work?",
+    "followups": [
+      "What is a default argument and why should you avoid mutable defaults like lists?",
+      "Explain the differences between positional-only and keyword-only arguments."
+    ]
+  },
+  {
+    "concept": "Functions",
+    "difficulty": "intermediate",
+    "question": "Explain Python's function scoping namespaces under the LEGB rule, and how closures capture variables from enclosing scopes.",
+    "followups": [
+      "What is the purpose of global and nonlocal keywords?",
+      "How does a closure preserve scope variables after function execution completes?"
+    ]
+  },
+  {
+    "concept": "Functions",
+    "difficulty": "advanced",
+    "question": "Analyze the structural anatomy of a PyFunctionObject. How are code objects (__code__), defaults (__defaults__), and free variables (__closure__) organized?",
+    "followups": [
+      "How are arguments packed and unpacked at the bytecode frame level?",
+      "What is execution frame introspection and how does it access local scope?"
+    ]
+  },
+  {
+    "concept": "Lists & Dictionaries",
+    "difficulty": "basic",
+    "question": "What are lists and dictionaries in Python, and what are their typical time complexities for insertions and lookups?",
+    "followups": [
+      "Why is dictionary lookup O(1) average time complexity?",
+      "Explain list slicing and how it allocates memory."
+    ]
+  },
+  {
+    "concept": "Lists & Dictionaries",
+    "difficulty": "intermediate",
+    "question": "How are Python dictionaries implemented under the hood? Explain hash collisions and the changes to dictionary ordering in modern Python.",
+    "followups": [
+      "Explain the open addressing hashing strategy used in dicts.",
+      "How does the compact dictionary layout save memory?"
+    ]
+  },
+  {
+    "concept": "Lists & Dictionaries",
+    "difficulty": "advanced",
+    "question": "Detail the growth factor allocation strategy of PyListObject, and the hash collision mitigation math in PyDictObject during lookup conflicts.",
+    "followups": [
+      "How does list resizing avoid continuous memory re-allocation?",
+      "Explain deletion execution and dummy slots cleanup in dictionaries."
+    ]
+  },
+  {
+    "concept": "OOP",
+    "difficulty": "basic",
+    "question": "What are the core pillars of Object-Oriented Programming in Python, and how do you define classes and instantiate objects?",
+    "followups": [
+      "What is the difference between instance variables and class variables?",
+      "What does the __init__ method do and how does it relate to object instantiation?"
+    ]
+  },
+  {
+    "concept": "OOP",
+    "difficulty": "intermediate",
+    "question": "Explain class constructors (__new__ vs __init__), classmethods, staticmethods, and the concept of duck typing in Python.",
+    "followups": [
+      "When would you override __new__ instead of __init__?",
+      "How does duck typing differ from strict polymorphism?"
+    ]
+  },
+  {
+    "concept": "OOP",
+    "difficulty": "advanced",
+    "question": "Explain the Python descriptor protocol. How are attribute lookups resolved via __getattribute__, __getattr__, and descriptors?",
+    "followups": [
+      "Explain data vs non-data descriptors precedence.",
+      "How are properties and methods implemented as descriptors?"
+    ]
+  },
+  {
+    "concept": "Inheritance",
+    "difficulty": "basic",
+    "question": "How does single and multiple inheritance work in Python, and how do you override methods in subclass definitions?",
+    "followups": [
+      "What is the role of super() in method overriding?",
+      "What happens if multiple parent classes define the same method name?"
+    ]
+  },
+  {
+    "concept": "Inheritance",
+    "difficulty": "intermediate",
+    "question": "Explain the C3 Linearization algorithm and how Method Resolution Order (MRO) is calculated in multiple inheritance scenarios.",
+    "followups": [
+      "What is a cooperative multiple inheritance structure?",
+      "What happens if parent class order violates C3 consistency rules?"
+    ]
+  },
+  {
+    "concept": "Inheritance",
+    "difficulty": "advanced",
+    "question": "Analyze how super() resolves class methods dynamically at runtime, and how you can manipulate MRO programmatically.",
+    "followups": [
+      "How does the super bound object resolve method lookups?",
+      "Explain the impact of metaclasses on inheritance and type creation."
+    ]
+  },
+  {
+    "concept": "Decorators",
+    "difficulty": "basic",
+    "question": "What is a Python decorator and how does it allow you to modify the behavior of a function without changing its source code?",
+    "followups": [
+      "How do you pass arguments to a decorated function using *args and **kwargs?",
+      "Can you write a simple decorator that logs when a function starts and finishes?"
+    ]
+  },
+  {
+    "concept": "Decorators",
+    "difficulty": "intermediate",
+    "question": "How do you implement decorators that accept arguments themselves, and why is `functools.wraps` essential when writing custom decorators?",
+    "followups": [
+      "What happens to a function's docstring and name if you do not use wraps?",
+      "How do you stack multiple decorators on a single function and in what order are they executed?"
+    ]
+  },
+  {
+    "concept": "Decorators",
+    "difficulty": "advanced",
+    "question": "Explain how class-based decorators with state are implemented, and how you can decorate methods inside class definitions without breaking descriptor binding.",
+    "followups": [
+      "How does the __get__ method of descriptors play a role in class method decoration?",
+      "Can you build a decorator that dynamically updates a class's dictionary upon initialization?"
+    ]
+  }
+]

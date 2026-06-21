@@ -1,0 +1,13 @@
+{
+  "domain_id": "python",
+  "name": "Python",
+  "description": "Python language concepts for interview activation.",
+  "version": "1.0.0",
+  "tags": ["python", "programming"],
+  "entry_concepts": ["Python Basics", "Variables", "Data Types"],
+  "metadata": {
+    "purpose": "domain_activation",
+    "default_starting_depth": 0,
+    "graph_file": "python_graph.json"
+  }
+}

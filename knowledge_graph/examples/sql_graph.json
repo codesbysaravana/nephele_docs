@@ -1,0 +1,248 @@
+{
+  "graph_id": "sql-core-graph",
+  "version": "1.0.0",
+  "metadata": {
+    "domain": "SQL",
+    "notes": "Core SQL programming and relational database fundamentals."
+  },
+  "domains": [
+    {
+      "domain_id": "sql",
+      "name": "SQL",
+      "description": "SQL query syntax and relational database optimizations.",
+      "version": "1.0.0",
+      "tags": ["sql", "database"],
+      "entry_concepts": ["sql_001", "sql_002", "sql_003"],
+      "metadata": {
+        "default_starting_depth": 0
+      }
+    }
+  ],
+  "concepts": [
+    {
+      "concept_id": "sql_001",
+      "concept_name": "SQL Basics",
+      "domain_id": "sql",
+      "difficulty": 0.10,
+      "description": "Relational databases structure, tables, columns, rows, primary and foreign keys.",
+      "tags": ["basics", "relational"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["SQL is a procedural programming language similar to C++ or Java."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_002",
+      "concept_name": "SELECT",
+      "domain_id": "sql",
+      "difficulty": 0.15,
+      "description": "Retrieving data from tables, selecting columns, distinct values, and column aliasing.",
+      "tags": ["querying", "select"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_003",
+      "concept_name": "WHERE",
+      "domain_id": "sql",
+      "difficulty": 0.25,
+      "description": "Filtering result rows using comparison operators, logical operators (AND, OR, NOT), and NULL conditions.",
+      "tags": ["filtering", "where"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_004",
+      "concept_name": "GROUP BY",
+      "domain_id": "sql",
+      "difficulty": 0.45,
+      "description": "Aggregating rows using SUM, AVG, COUNT, MIN, MAX, grouping columns, and filter results with HAVING.",
+      "tags": ["aggregations", "group-by"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_005",
+      "concept_name": "JOINS",
+      "domain_id": "sql",
+      "difficulty": 0.60,
+      "description": "Inner, outer, cross, and self joins, join conditions, and performance execution plans (hash, nested-loop).",
+      "tags": ["joining", "joins"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_006",
+      "concept_name": "Subqueries",
+      "domain_id": "sql",
+      "difficulty": 0.70,
+      "description": "Nested queries, correlated and uncorrelated subqueries, EXISTS, IN, ANY, and Common Table Expressions (CTEs).",
+      "tags": ["subqueries", "ctes"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_007",
+      "concept_name": "Indexes",
+      "domain_id": "sql",
+      "difficulty": 0.80,
+      "description": "Clustered and non-clustered indexes, B-tree indexes, covering indexes, and write overhead impacts.",
+      "tags": ["indexing", "performance"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "sql_008",
+      "concept_name": "Optimization",
+      "domain_id": "sql",
+      "difficulty": 0.90,
+      "description": "Query plan analysis, EXPLAIN, avoiding SELECT *, reducing scans, and query tuning.",
+      "tags": ["optimization", "performance"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["Indexes always guarantee faster execution times regardless of search patterns."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e_sql_001_sql_002",
+      "source_id": "sql_001",
+      "target_id": "sql_002",
+      "relationship_type": "prerequisite",
+      "label": "requires basic relational knowledge",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_002_sql_003",
+      "source_id": "sql_002",
+      "target_id": "sql_003",
+      "relationship_type": "prerequisite",
+      "label": "requires select syntax familiarity",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_003_sql_004",
+      "source_id": "sql_003",
+      "target_id": "sql_004",
+      "relationship_type": "prerequisite",
+      "label": "requires data filtering capabilities",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_004_sql_005",
+      "source_id": "sql_004",
+      "target_id": "sql_005",
+      "relationship_type": "prerequisite",
+      "label": "requires aggregate capabilities",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_005_sql_006",
+      "source_id": "sql_005",
+      "target_id": "sql_006",
+      "relationship_type": "prerequisite",
+      "label": "requires multi-table joining skills",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_006_sql_007",
+      "source_id": "sql_006",
+      "target_id": "sql_007",
+      "relationship_type": "prerequisite",
+      "label": "requires nested querying capability",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_sql_007_sql_008",
+      "source_id": "sql_007",
+      "target_id": "sql_008",
+      "relationship_type": "prerequisite",
+      "label": "requires index structure understanding",
+      "directionality": "directed",
+      "metadata": {}
+    }
+  ]
+}

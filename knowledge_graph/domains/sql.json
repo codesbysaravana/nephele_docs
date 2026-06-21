@@ -1,0 +1,13 @@
+{
+  "domain_id": "sql",
+  "name": "SQL",
+  "description": "SQL fundamentals for relational query interviews.",
+  "version": "1.0.0",
+  "tags": ["sql", "database"],
+  "entry_concepts": ["SQL Basics", "SELECT", "WHERE"],
+  "metadata": {
+    "purpose": "domain_activation",
+    "default_starting_depth": 0,
+    "graph_file": "sql_graph.json"
+  }
+}

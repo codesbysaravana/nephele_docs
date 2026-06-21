@@ -1,0 +1,49 @@
+# Render.com Deployment Blueprint
+services:
+  # 1. Main FastAPI Web Application
+  - type: web
+    name: nephele-api
+    env: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: starter
+    ports:
+      - key: PORT
+        value: 8000
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nephele-db
+          property: connectionString
+      - key: CHROMA_SERVER_HOST
+        value: nephele-chroma
+      - key: CHROMA_SERVER_PORT
+        value: "8000"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ASSEMBLYAI_API_KEY
+        sync: false
+
+  # 2. Private ChromaDB Instance
+  - type: pserver
+    name: nephele-chroma
+    env: docker
+    image: chromadb/chroma:0.4.15
+    plan: starter
+    disk:
+      name: chroma-persist
+      mountPath: /chroma/chroma
+      sizeGB: 10
+    envVars:
+      - key: PERSIST_DIRECTORY
+        value: /chroma/chroma
+      - key: ANONYMIZED_TELEMETRY
+        value: "False"
+
+databases:
+  - name: nephele-db
+    databaseName: nephele
+    user: nephele
+    plan: starter

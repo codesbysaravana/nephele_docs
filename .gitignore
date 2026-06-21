@@ -1,4 +1,4 @@
-# Python
+# Python bytecode and caches
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,57 +10,57 @@ venv/
 env/
 ENV/
 
-# Environment Variables & Secrets
+# Environment Variables & Secrets (never commit these)
 .env
 .env.*
 !.env.example
 
+# Database Files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
 # Logs
 *.log
 
-# IDEs
+# IDEs and Editors
 .vscode/
 .idea/
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Testing
+# Testing and Coverage
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 
-# Build
+# Build and Distribution
 build/
 dist/
 *.egg-info/
+node_modules/
+.next/
+npm-debug.log*
 
 # OS Files
 .DS_Store
 Thumbs.db
 
-# Model Files
+# Model Files and Weights
 *.pt
 *.pth
 *.onnx
 *.ckpt
 
-# Audio Files
+# Audio & Video Assets
 *.wav
 *.mp3
-
-# Video Files
 *.mp4
 *.avi
 
-# Temporary Files
+# Temp Directories
 tmp/
 temp/
-
-# Node (if frontend exists)
-node_modules/
-.next/
-npm-debug.log*
 
 # Streamlit
 .streamlit/secrets.toml
