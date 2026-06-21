@@ -25,6 +25,9 @@ class MockCursor:
         # For mock updates/inserts we don't fetch rows, but for load we return mock data if needed
         return None
 
+    def fetchall(self) -> List[tuple[Any, ...]]:
+        return []
+
     def __enter__(self) -> MockCursor:
         return self
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Set
 
@@ -10,7 +11,13 @@ from knowledge_graph.graph_loader import load_graph_document
 from .decision_rules import decide_traversal, select_next_concept
 from .graph_navigator import GraphNavigator
 from .models import TraversalDecision, TraversalResult, TraversalState
+from .exceptions import TraversalLoopDetected
 from .state_tracker import StateTracker
+
+logger = logging.getLogger(__name__)
+
+# In-memory loop tracker for fallback/testing when no database connection is present
+_IN_MEMORY_LOOP_TRACKER = {}
 
 
 def find_graph_path(domain: str) -> Path:
@@ -24,8 +31,9 @@ def find_graph_path(domain: str) -> Path:
     for cand in candidates:
         if cand.exists():
             return cand
-    # Fallback default
-    return base_dir / "examples" / "machine_learning_graph.json"
+    
+    # Raise error if no matching graph file is found
+    raise FileNotFoundError(f"Knowledge graph document for domain '{domain}' not found.")
 
 
 # Module-level tracker instance for module-level functions
@@ -45,6 +53,11 @@ def get_next_concept(
     graph_path = find_graph_path(domain)
     graph = load_graph_document(graph_path)
     navigator = GraphNavigator(graph)
+
+    # Check if current concept exists in active graph
+    if not navigator.lookup_concept(current_concept):
+        from .exceptions import GraphConceptNotFound
+        raise GraphConceptNotFound(f"Concept '{current_concept}' not found in domain '{domain}' graph.")
 
     # 1. Resolve State
     if state is not None:
@@ -107,13 +120,49 @@ def get_next_concept(
         state["accelerated"] = t_state.accelerated
         state["terminated"] = t_state.terminated
 
+    # Loop detection check
+    resolved_next = next_concept or t_state.current_concept
+    if resolved_next == evaluated_concept:
+        consecutive_count = 1
+        db_queried = False
+        if conn and candidate_id:
+            try:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT concept_id FROM concept_evaluations WHERE candidate_id = %s ORDER BY id DESC LIMIT 5;",
+                        (candidate_id,)
+                    )
+                    rows = cur.fetchall()
+                    consecutive_count = 0
+                    for row in rows:
+                        if row[0] == evaluated_concept:
+                            consecutive_count += 1
+                        else:
+                            break
+                    db_queried = True
+            except Exception as e:
+                logger.error(f"Error querying loop detection stats: {e}")
+        
+        if not db_queried:
+            key = (candidate_id, evaluated_concept)
+            consecutive_count = _IN_MEMORY_LOOP_TRACKER.get(key, 0) + 1
+            _IN_MEMORY_LOOP_TRACKER[key] = consecutive_count
+            
+        if consecutive_count >= 3:
+            raise TraversalLoopDetected(f"Infinite traversal loop detected on concept '{evaluated_concept}' for candidate '{candidate_id}'.")
+    else:
+        if candidate_id:
+            for k in list(_IN_MEMORY_LOOP_TRACKER.keys()):
+                if k[0] == candidate_id:
+                    _IN_MEMORY_LOOP_TRACKER.pop(k, None)
+
     # 6. Save using StateTracker
     _tracker.save_session(t_state, conn, decision.value, mastery, concept_id=evaluated_concept)
 
     # 7. Format output
     result_dict = {
         "decision": decision.value,
-        "next_concept": next_concept or t_state.current_concept
+        "next_concept": next_concept
     }
     if reason:
         result_dict["reason"] = reason

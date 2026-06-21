@@ -1,15 +1,123 @@
 [
   {
-    "concept": "Joins",
+    "concept": "SQL Basics",
     "difficulty": "basic",
-    "question": "Can you explain the difference between INNER JOIN, LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN?",
+    "question": "What is a relational database management system (RDBMS), and what are the roles of primary keys and foreign keys in defining relationships between tables?",
     "followups": [
-      "What happens to non-matching rows in a LEFT JOIN?",
-      "In what scenario would you use a self-join?"
+      "What is the difference between a primary key and a unique key constraint?",
+      "How does a foreign key enforce referential integrity?"
     ]
   },
   {
-    "concept": "Joins",
+    "concept": "SQL Basics",
+    "difficulty": "intermediate",
+    "question": "Explain the ACID properties of relational database transactions and how they ensure database integrity during concurrent operations or failures.",
+    "followups": [
+      "What is the difference between COMMIT and ROLLBACK statements?",
+      "How does write-ahead logging (WAL) support transaction durability?"
+    ]
+  },
+  {
+    "concept": "SQL Basics",
+    "difficulty": "advanced",
+    "question": "Analyze the differences between various transaction isolation levels (Read Uncommitted, Read Committed, Repeatable Read, Serializable) and the concurrency phenomena (dirty reads, non-repeatable reads, phantom reads) they prevent.",
+    "followups": [
+      "How does Multi-Version Concurrency Control (MVCC) eliminate the need for read locks in many RDBMS?",
+      "What is a serialization anomaly and how does a database detect it?"
+    ]
+  },
+  {
+    "concept": "SELECT",
+    "difficulty": "basic",
+    "question": "How do you use the SELECT statement to retrieve specific columns, rename them with aliases, and filter out duplicate rows using DISTINCT?",
+    "followups": [
+      "What is the performance difference between selecting specific columns versus using SELECT *?",
+      "How does the LIMIT or TOP clause work in limiting result sets?"
+    ]
+  },
+  {
+    "concept": "SELECT",
+    "difficulty": "intermediate",
+    "question": "Explain how the SELECT statement is executed logically by a database engine compared to how it is written syntactically. What is the logical query processing phase order starting from FROM?",
+    "followups": [
+      "At what point in logical processing is the SELECT alias made available for sorting or filtering?",
+      "How do window functions (like ROW_NUMBER() or RANK()) fit into the SELECT logical execution order?"
+    ]
+  },
+  {
+    "concept": "SELECT",
+    "difficulty": "advanced",
+    "question": "Analyze the impact of SELECT column projections on memory allocation, disk I/O, and network transfer in columnar storage databases (e.g., Snowflake, Redshift) versus row-oriented databases (e.g., PostgreSQL).",
+    "followups": [
+      "Why is a SELECT * query particularly devastating for columnar databases?",
+      "Explain how late materialization optimizations work in modern database engines to defer fetching actual column data."
+    ]
+  },
+  {
+    "concept": "WHERE",
+    "difficulty": "basic",
+    "question": "What is the purpose of the WHERE clause in SQL, and how do you use comparison operators (like =, <, >) and logical operators (AND, OR, NOT) to filter rows?",
+    "followups": [
+      "How do you handle NULL values inside a WHERE clause? Why does col = NULL not work?",
+      "What is the difference between IN and BETWEEN operators?"
+    ]
+  },
+  {
+    "concept": "WHERE",
+    "difficulty": "intermediate",
+    "question": "Explain how the WHERE clause interacts with index scans and index seeks, and how search arguments (SARGable predicates) affect execution plans.",
+    "followups": [
+      "Why does applying a function to a column in a WHERE clause (e.g., WHERE YEAR(created_at) = 2026) make the predicate non-SARGable?",
+      "How does short-circuit evaluation work inside logical operators in SQL WHERE clauses?"
+    ]
+  },
+  {
+    "concept": "WHERE",
+    "difficulty": "advanced",
+    "question": "Analyze how database query optimizers estimate selectivity for complex WHERE clauses with multiple predicates, and how stale statistics can lead to incorrect cardinality estimations and poor plan selection.",
+    "followups": [
+      "What is a histogram in database statistics and how is it used to estimate WHERE selectivity?",
+      "How do multi-column statistics or correlation statistics help when filtering on columns that depend on each other?"
+    ]
+  },
+  {
+    "concept": "GROUP BY",
+    "difficulty": "basic",
+    "question": "How does the GROUP BY clause work, and what is the difference between using a WHERE clause and a HAVING clause when filtering aggregated data?",
+    "followups": [
+      "Which aggregate functions (like COUNT, SUM, AVG, MIN, MAX) ignore NULL values?",
+      "Can you reference a column in the SELECT list that is not in the GROUP BY clause and not aggregated? Why or why not?"
+    ]
+  },
+  {
+    "concept": "GROUP BY",
+    "difficulty": "intermediate",
+    "question": "Explain the differences in execution strategies for GROUP BY, specifically Hash Aggregate vs. Group Aggregate (Sort/Stream Aggregate), and when the optimizer prefers one over the other.",
+    "followups": [
+      "Why does a Sort/Group Aggregate require its input to be sorted beforehand, and how can an index help?",
+      "How do CUBE, ROLLUP, and GROUPING SETS extensions expand grouping capabilities?"
+    ]
+  },
+  {
+    "concept": "GROUP BY",
+    "difficulty": "advanced",
+    "question": "Describe the challenges of performing GROUP BY operations in a distributed or partitioned database environment. How do local aggregations and two-phase aggregation plans minimize network data shuffle?",
+    "followups": [
+      "How does data skew on the grouping key affect the memory and CPU load of reducer nodes during aggregation?",
+      "Explain how spill-to-disk mechanisms are handled when a Hash Aggregate exceeds the working memory allocation (e.g., work_mem in Postgres)."
+    ]
+  },
+  {
+    "concept": "JOINS",
+    "difficulty": "basic",
+    "question": "Can you explain the difference between INNER JOIN, LEFT OUTER JOIN, RIGHT OUTER JOIN, and FULL OUTER JOIN, and when you would use each?",
+    "followups": [
+      "What happens to non-matching rows in a LEFT JOIN?",
+      "What is a CROSS JOIN and what is its result set cardinality?"
+    ]
+  },
+  {
+    "concept": "JOINS",
     "difficulty": "intermediate",
     "question": "How do database query planners execute Joins internally? Explain Nested Loop, Hash Join, and Merge Join.",
     "followups": [
@@ -18,12 +126,39 @@
     ]
   },
   {
-    "concept": "Joins",
+    "concept": "JOINS",
     "difficulty": "advanced",
     "question": "Discuss the performance implications of large-scale joins in distributed databases. How do partition-wise joins and broadcast joins work?",
     "followups": [
       "What is a shuffle in distributed joining and how do you minimize it?",
       "Explain skew in distributed datasets and its impact on join performance."
+    ]
+  },
+  {
+    "concept": "Subqueries",
+    "difficulty": "basic",
+    "question": "What is a subquery, and what is the difference between a subquery used in a SELECT clause, a WHERE clause, and a FROM clause?",
+    "followups": [
+      "What is an alias and why is it mandatory for subqueries in the FROM clause?",
+      "What is the difference between the IN operator and the EXISTS operator when using a subquery?"
+    ]
+  },
+  {
+    "concept": "Subqueries",
+    "difficulty": "intermediate",
+    "question": "Explain the difference between correlated and uncorrelated subqueries, and how a Common Table Expression (CTE) differs from a standard subquery or view.",
+    "followups": [
+      "How does a database optimizer unnest or flatten a correlated subquery into a join?",
+      "Are CTEs optimization boundaries in your database of choice (e.g., PostgreSQL before version 12 vs after)?"
+    ]
+  },
+  {
+    "concept": "Subqueries",
+    "difficulty": "advanced",
+    "question": "Detail the execution mechanics of recursive CTEs. How are the anchor member and recursive member evaluated, and how do database engines prevent infinite recursion loops?",
+    "followups": [
+      "Compare the performance and execution plan of a semi-join (EXISTS) versus a regular join with DISTINCT when filtering records.",
+      "How does the database execute lateral joins (LATERAL or CROSS APPLY) and why are they useful?"
     ]
   },
   {
@@ -51,6 +186,33 @@
     "followups": [
       "How does column order in a composite index affect its utility for sorting?",
       "What are partial indexes and expression indexes, and when should you use them?"
+    ]
+  },
+  {
+    "concept": "Optimization",
+    "difficulty": "basic",
+    "question": "What is a database query optimizer, and how do you use the EXPLAIN statement to see the execution plan of a query?",
+    "followups": [
+      "What is the difference between EXPLAIN and EXPLAIN ANALYZE?",
+      "Why should you avoid using SELECT * in production application queries?"
+    ]
+  },
+  {
+    "concept": "Optimization",
+    "difficulty": "intermediate",
+    "question": "Explain how a cost-based optimizer determines the best execution plan, and what statistics (like row count, width, null fraction) are required for it to make accurate choices.",
+    "followups": [
+      "What is parameter sniffing and how can it lead to suboptimal execution plans?",
+      "How do index fragmentation and statistics updates affect optimizer decisions?"
+    ]
+  },
+  {
+    "concept": "Optimization",
+    "difficulty": "advanced",
+    "question": "Detail how you would debug and optimize a slow query that involves a large join, filtering, and ordering. Walk through reading an execution plan and proposing changes (like indexing, rewrite, or schema updates).",
+    "followups": [
+      "How do join hints or index hints force optimizer behavior and what are the risks of using them?",
+      "Explain the differences and performance characteristics of temporary tables, table variables, and CTEs under heavy concurrency."
     ]
   }
 ]

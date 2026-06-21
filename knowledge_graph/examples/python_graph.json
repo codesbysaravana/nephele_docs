@@ -1,0 +1,277 @@
+{
+  "graph_id": "python-core-graph",
+  "version": "1.0.0",
+  "metadata": {
+    "domain": "Python",
+    "notes": "Core Python programming concepts from basics to advanced decorators."
+  },
+  "domains": [
+    {
+      "domain_id": "python",
+      "name": "Python",
+      "description": "Core Python programming language principles and advanced constructs.",
+      "version": "1.0.0",
+      "tags": ["python", "programming"],
+      "entry_concepts": ["py_001", "py_002", "py_003"],
+      "metadata": {
+        "default_starting_depth": 0
+      }
+    }
+  ],
+  "concepts": [
+    {
+      "concept_id": "py_001",
+      "concept_name": "Python Basics",
+      "domain_id": "python",
+      "difficulty": 0.10,
+      "description": "General understanding of Python syntax, indentation, comments, and standard execution model.",
+      "tags": ["syntax", "basics"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["Indentation in Python is purely cosmetic and has no semantic meaning."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_002",
+      "concept_name": "Variables",
+      "domain_id": "python",
+      "difficulty": 0.15,
+      "description": "Variable assignments, naming rules, dynamic typing, and object referencing.",
+      "tags": ["basics", "variables"],
+      "importance_weight": 0.85,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_003",
+      "concept_name": "Data Types",
+      "domain_id": "python",
+      "difficulty": 0.20,
+      "description": "Numeric types, booleans, strings, and differences between mutable and immutable objects.",
+      "tags": ["basics", "data-types"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_004",
+      "concept_name": "Control Flow",
+      "domain_id": "python",
+      "difficulty": 0.30,
+      "description": "Conditional statements (if-elif-else), loops (for, while), and loop control statements (break, continue, pass).",
+      "tags": ["control-flow", "loops"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_005",
+      "concept_name": "Functions",
+      "domain_id": "python",
+      "difficulty": 0.40,
+      "description": "Defining functions, parameters, arguments (*args, **kwargs), return values, namespaces, and scope (LEGB).",
+      "tags": ["functions", "scope"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_006",
+      "concept_name": "Lists & Dictionaries",
+      "domain_id": "python",
+      "difficulty": 0.50,
+      "description": "Lists, tuples, sets, dictionaries, comprehensions, and their respective operational time complexities.",
+      "tags": ["data-structures", "collections"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_007",
+      "concept_name": "OOP",
+      "domain_id": "python",
+      "difficulty": 0.65,
+      "description": "Classes, objects, attributes, methods, constructors (__init__), and encapsulation.",
+      "tags": ["oop", "classes"],
+      "importance_weight": 0.90,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_008",
+      "concept_name": "Inheritance",
+      "domain_id": "python",
+      "difficulty": 0.75,
+      "description": "Single and multiple inheritance, method overriding, super(), and Method Resolution Order (MRO).",
+      "tags": ["oop", "inheritance", "mro"],
+      "importance_weight": 0.85,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": [],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    },
+    {
+      "concept_id": "py_009",
+      "concept_name": "Decorators",
+      "domain_id": "python",
+      "difficulty": 0.85,
+      "description": "First-class functions, closures, decorator syntax, stacked decorators, and functools.wraps usage.",
+      "tags": ["decorators", "advanced"],
+      "importance_weight": 0.95,
+      "estimated_question_count": 1,
+      "question_ids": [],
+      "common_failures": [],
+      "common_misconceptions": ["Decorators physically alter the bytecode of the decorated function."],
+      "future_state": {
+        "mastery_score": null,
+        "confidence": null,
+        "attempt_count": null,
+        "interview_history": []
+      },
+      "metadata": {}
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "e_py_001_py_002",
+      "source_id": "py_001",
+      "target_id": "py_002",
+      "relationship_type": "prerequisite",
+      "label": "requires basic syntax understanding",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_002_py_003",
+      "source_id": "py_002",
+      "target_id": "py_003",
+      "relationship_type": "prerequisite",
+      "label": "requires variable referencing knowledge",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_003_py_004",
+      "source_id": "py_003",
+      "target_id": "py_004",
+      "relationship_type": "prerequisite",
+      "label": "requires data type familiarity",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_004_py_005",
+      "source_id": "py_004",
+      "target_id": "py_005",
+      "relationship_type": "prerequisite",
+      "label": "requires branching and loop flow understanding",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_005_py_006",
+      "source_id": "py_005",
+      "target_id": "py_006",
+      "relationship_type": "prerequisite",
+      "label": "requires functional definition capability",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_006_py_007",
+      "source_id": "py_006",
+      "target_id": "py_007",
+      "relationship_type": "prerequisite",
+      "label": "requires data structures capability",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_007_py_008",
+      "source_id": "py_007",
+      "target_id": "py_008",
+      "relationship_type": "prerequisite",
+      "label": "requires object-oriented structures",
+      "directionality": "directed",
+      "metadata": {}
+    },
+    {
+      "edge_id": "e_py_008_py_009",
+      "source_id": "py_008",
+      "target_id": "py_009",
+      "relationship_type": "prerequisite",
+      "label": "requires class and method structuring",
+      "directionality": "directed",
+      "metadata": {}
+    }
+  ]
+}

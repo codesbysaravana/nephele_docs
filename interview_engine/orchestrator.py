@@ -230,18 +230,27 @@ class InterviewOrchestrator:
             "terminated": terminated
         }
 
-        traversal_result = get_next_concept(
-            domain=domain,
-            current_concept=concept,
-            mastery=mastery,
-            confidence=confidence,
-            state=state,
-            candidate_id=candidate_id,
-            conn=conn
-        )
-
-        decision = traversal_result["decision"]
-        next_concept = traversal_result.get("next_concept")
+        try:
+            traversal_result = get_next_concept(
+                domain=domain,
+                current_concept=concept,
+                mastery=mastery,
+                confidence=confidence,
+                state=state,
+                candidate_id=candidate_id,
+                conn=conn
+            )
+            decision = traversal_result["decision"]
+            next_concept = traversal_result.get("next_concept")
+        except Exception as e:
+            from graph_traversal.exceptions import TraversalLoopDetected, GraphConceptNotFound
+            if isinstance(e, (TraversalLoopDetected, GraphConceptNotFound)):
+                logger.warning(f"Graph traversal anomaly: {e}. Terminating interview session safely.")
+                decision = "terminate_branch"
+                next_concept = concept
+                state["terminated"] = True
+            else:
+                raise e
 
         # 6. Check Decision and Update Session Lifecycle State
         new_session_state = "ACTIVE"

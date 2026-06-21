@@ -16,3 +16,4 @@ chromadb
 reportlab
 pytest
 pytest-cov
+mediapipe

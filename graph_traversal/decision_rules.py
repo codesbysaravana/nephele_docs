@@ -57,7 +57,8 @@ def select_next_concept(
     """Select the next concept based on the traversal decision and cycle protection."""
     current_concept = navigator.lookup_concept(current_concept_id_or_name)
     if not current_concept:
-        return current_concept_id_or_name
+        from .exceptions import GraphConceptNotFound
+        raise GraphConceptNotFound(f"Concept '{current_concept_id_or_name}' not found in the active knowledge graph.")
 
     current_id = current_concept.concept_id
 
