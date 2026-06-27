@@ -48,7 +48,7 @@ Rules for the Next Question:
 5. Always acknowledge their previous answer briefly before asking the next question.
 """
 
-    def __init__(self, model_name: str = "llama-3.1-8b-instant"):
+    def __init__(self, model_name: str = "meta-llama/llama-4-scout-17b-16e-instruct"):
         """Initialize the Groq client."""
         # Using a model that robustly supports JSON mode.
         self.client = groq.AsyncGroq(api_key=GROQ_API_KEY)

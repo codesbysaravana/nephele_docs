@@ -9,3 +9,6 @@ groq
 assemblyai
 sounddevice
 websocket-client
+pymupdf
+python-docx
+python-multipart
