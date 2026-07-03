@@ -29,7 +29,7 @@ class ResumeExtractor:
             logger.warning(
                 "GROQ_API_KEY is not set — LLM calls will fail at runtime."
             )
-        self._client = groq.AsyncGroq(api_key=GROQ_API_KEY)
+        self._client = groq.AsyncGroq(api_key=GROQ_API_KEY or "missing_api_key")
         logger.info("ResumeExtractor initialised (model=%s)", _MODEL)
 
     async def extract(self, raw_text: str) -> ResumeData:

@@ -51,7 +51,7 @@ Rules for the Next Question:
     def __init__(self, model_name: str = "meta-llama/llama-4-scout-17b-16e-instruct"):
         """Initialize the Groq client."""
         # Using a model that robustly supports JSON mode.
-        self.client = groq.AsyncGroq(api_key=GROQ_API_KEY)
+        self.client = groq.AsyncGroq(api_key=GROQ_API_KEY or "missing_api_key")
         self.model_name = model_name
 
     async def evaluate_and_generate(

@@ -35,7 +35,7 @@ class ResumeAnalyzer:
     def __init__(self) -> None:
         self._extractor = ResumeExtractor()
         self._profile_builder = ProfileBuilder()
-        self._groq_client = groq.AsyncGroq(api_key=GROQ_API_KEY)
+        self._groq_client = groq.AsyncGroq(api_key=GROQ_API_KEY or "missing_api_key")
         logger.info("ResumeAnalyzer initialised")
 
     async def analyze(self, file_path: str) -> CandidateProfile:

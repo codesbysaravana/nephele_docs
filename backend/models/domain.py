@@ -81,6 +81,9 @@ class CandidateProfile:
         return "\n".join(parts)
 
 
+CandidateInfo = CandidateProfile
+
+
 # ---------------------------------------------------------------------------
 # Interview Configuration
 # ---------------------------------------------------------------------------

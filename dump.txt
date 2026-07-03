@@ -1,0 +1,1228 @@
+﻿"""
+Nephele Interview Engine â€” Multi-Modal Fusion Engine.
+
+Processes high-frequency vision and audio signals, maintaining rolling
+windows to detect behavioral trends (e.g., sustained loss of engagement,
+nervousness markers) that the orchestrator should react to.
+"""
+
+import collections
+import logging
+from typing import List, Optional
+
+from backend.models.domain import MultiModalSignals, VisionSnapshot
+
+logger = logging.getLogger(__name__)
+
+
+class MultiModalFusionEngine:
+    """
+    Analyzes live multi-modal metrics to detect behavioral patterns.
+    """
+
+    def __init__(self, history_capacity: int = 100):
+        """
+        Args:
+            history_capacity: How many recent vision frames to buffer for 
+                              trend analysis.
+        """
+        self.engagement_buffer = collections.deque(maxlen=history_capacity)
+        self.eye_contact_buffer = collections.deque(maxlen=history_capacity)
+        self.face_visible_buffer = collections.deque(maxlen=history_capacity)
+
+    def process_vision_frame(
+        self, 
+        signals: MultiModalSignals, 
+        eye_contact: float, 
+        engagement: float, 
+        yaw: float, 
+        pitch: float, 
+        roll: float, 
+        face_visible: bool
+    ) -> None:
+        """
+        Updates the current answer's snapshot AND the engine's trend buffers.
+        """
+        # 1. Update the current answer window snapshot (online mean)
+        signals.vision.update_from_frame(
+            eye_contact=eye_contact,
+            engagement=engagement,
+            yaw=yaw,
+            pitch=pitch,
+            roll=roll,
+            face_visible=face_visible
+        )
+
+        # 2. Update the trend buffers
+        self.engagement_buffer.append(engagement)
+        self.eye_contact_buffer.append(eye_contact)
+        self.face_visible_buffer.append(face_visible)
+
+    def analyze_behavioral_trends(self) -> dict:
+        """
+        Analyze the buffered history for concerning or notable trends.
+        
+        Returns a dictionary of boolean flags representing detected behaviors.
+        """
+        trends = {
+            "sustained_engagement_drop": False,
+            "poor_eye_contact": False,
+            "face_lost": False,
+            "nervous_movement": False,
+        }
+
+        if len(self.engagement_buffer) < 10:
+            return trends  # Not enough data yet
+
+        # Face Lost detection
+        # If the face was visible less than 50% of the time in the recent buffer
+        visible_ratio = sum(self.face_visible_buffer) / len(self.face_visible_buffer)
+        if visible_ratio < 0.5:
+            trends["face_lost"] = True
+
+        # Sustained Engagement Drop
+        # If the average engagement over the buffer is below 40
+        avg_eng = sum(self.engagement_buffer) / len(self.engagement_buffer)
+        if avg_eng < 40.0:
+            trends["sustained_engagement_drop"] = True
+
+        # Poor Eye Contact
+        avg_eye = sum(self.eye_contact_buffer) / len(self.eye_contact_buffer)
+        if avg_eye < 30.0:
+            trends["poor_eye_contact"] = True
+
+        return trends
+
+    def compute_audio_confidence(self, wpm: float, silence_ratio: float, filler_ratio: float) -> float:
+        """
+        Compute an audio-only confidence score based on speech pace and hesitations.
+        """
+        # WPM scoring: peak at 150 WPM
+        if wpm <= 0:
+            wpm_score = 0.0
+        else:
+            deviation = abs(wpm - 150) / 100.0
+            wpm_score = max(0.0, 1.0 - deviation) * 100.0
+
+        silence_score = max(0.0, (1.0 - silence_ratio)) * 100.0
+        filler_score = max(0.0, (1.0 - filler_ratio * 5.0)) * 100.0
+
+        return 0.40 * wpm_score + 0.30 * silence_score + 0.30 * filler_score
+
+    def clear_buffers(self) -> None:
+        """Clear historical buffers (useful between rounds)."""
+        self.engagement_buffer.clear()
+        self.eye_contact_buffer.clear()
+        self.face_visible_buffer.clear()
+"""
+Nephele Interview Engine â€” Adaptive Decision Engine.
+
+Responsible for deciding how the interview should adapt based on the
+candidate's performance and behavioral metrics. Controls difficulty
+scaling, follow-up decisions, and pacing.
+"""
+
+import logging
+from dataclasses import dataclass
+from typing import List
+
+from backend.models.domain import MultiModalSignals, InterviewSession
+from backend.models.enums import Difficulty
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class AdaptiveDecision:
+    """The outcome of the Adaptive Engine's analysis."""
+    new_difficulty: Difficulty
+    action: str  # "next_question", "follow_up", "end_topic"
+    behavioral_directive: str  # e.g., "Candidate seems nervous, be encouraging."
+
+
+class AdaptiveDecisionEngine:
+    """
+    Makes logic decisions for the interview flow based on fused metrics.
+    """
+
+    def __init__(self, score_threshold_up: float = 85.0, score_threshold_down: float = 50.0):
+        self.threshold_up = score_threshold_up
+        self.threshold_down = score_threshold_down
+
+    def analyze(self, session: InterviewSession, latest_score: float, behavioral_trends: dict) -> AdaptiveDecision:
+        """
+        Determine the next steps for the interview.
+        """
+        current_diff = session.current_difficulty
+        action = "next_question"
+        directive = ""
+
+        # 1. Behavioral Adjustments
+        if behavioral_trends.get("face_lost"):
+            directive = "The candidate is currently out of frame. Politely ask them to remain visible."
+            action = "re_engage"
+        elif behavioral_trends.get("sustained_engagement_drop"):
+            directive = "The candidate seems disengaged. Try to make the next question more interactive or relatable."
+        elif behavioral_trends.get("poor_eye_contact"):
+            directive = "The candidate might be reading from notes. Ask a question that requires spontaneous problem-solving."
+            
+        # 2. Topic / Follow-up Logic
+        if session.last_answer and session.last_answer.language_scores:
+            scores = session.last_answer.language_scores
+            # If technical correctness is good, but depth is low -> ask a follow-up to dig deeper.
+            if scores.get("technical_correctness", 0) >= 7.0 and scores.get("answer_depth", 0) < 5.0:
+                # Limit follow-ups to prevent infinite drilling
+                last_q = session.last_question
+                if last_q and last_q.follow_up_depth < session.config.max_follow_ups_per_question:
+                    action = "follow_up"
+
+        # 3. Difficulty Scaling
+        new_diff = current_diff
+        if latest_score >= self.threshold_up:
+            new_diff = current_diff.increase()
+            if new_diff != current_diff:
+                logger.info(f"Difficulty increased to {new_diff.value}")
+                if not directive:
+                    directive = "The candidate is doing well. Ask a more challenging question."
+        elif latest_score <= self.threshold_down:
+            new_diff = current_diff.decrease()
+            if new_diff != current_diff:
+                logger.info(f"Difficulty decreased to {new_diff.value}")
+                if not directive:
+                    directive = "The candidate struggled with the last question. Offer a simpler, foundational question."
+
+        return AdaptiveDecision(
+            new_difficulty=new_diff,
+            action=action,
+            behavioral_directive=directive
+        )
+"""
+Nephele Interview Engine â€” Cognitive Engine.
+
+Combines answer evaluation and question generation into a single LLM call
+to minimize latency. Uses the Groq API with JSON mode to ensure structured
+outputs.
+"""
+
+import json
+import logging
+from typing import Tuple, Dict
+
+import groq
+from app.config import GROQ_API_KEY
+from backend.models.domain import QuestionRecord
+from backend.models.enums import RoundType, Difficulty
+from backend.interview.adaptive_engine import AdaptiveDecision
+
+logger = logging.getLogger(__name__)
+
+
+class CognitiveEngine:
+    """
+    Handles interactions with the LLM. 
+    Evaluates answers and generates the next question simultaneously.
+    """
+
+    SYSTEM_PROMPT = """You are Nephele, a professional AI Interviewer.
+Your task is to EVALUATE the candidate's last answer and GENERATE the next question.
+
+You MUST respond in valid JSON format matching this schema exactly:
+{
+    "evaluation": {
+        "technical_correctness": float (1.0 to 10.0),
+        "communication_quality": float (1.0 to 10.0),
+        "answer_depth": float (1.0 to 10.0),
+        "relevance": float (1.0 to 10.0),
+        "professionalism": float (1.0 to 10.0)
+    },
+    "next_question_text": "string (the exact words you will speak next)"
+}
+
+Rules for the Next Question:
+1. Speak naturally and professionally.
+2. If this is a follow-up, dig deeper into the previous answer.
+3. If moving to a new question, ensure it matches the current round and difficulty.
+4. Do NOT use markdown actions (e.g., *nods*).
+5. Always acknowledge their previous answer briefly before asking the next question.
+"""
+
+    def __init__(self, model_name: str = "meta-llama/llama-4-scout-17b-16e-instruct"):
+        """Initialize the Groq client."""
+        # Using a model that robustly supports JSON mode.
+        self.client = groq.AsyncGroq(api_key=GROQ_API_KEY or "missing_api_key")
+        self.model_name = model_name
+
+    async def evaluate_and_generate(
+        self,
+        context_window: str,
+        latest_transcript: str,
+        adaptive_decision: AdaptiveDecision,
+        session_id: str,
+        round_type: RoundType,
+        difficulty: Difficulty,
+    ) -> Tuple[Dict[str, float], QuestionRecord]:
+        """
+        Single LLM call to evaluate the last answer and generate the next question.
+        """
+        
+        # Build the user prompt
+        user_prompt = f"""
+{context_window}
+
+--- LATEST CANDIDATE ANSWER ---
+{latest_transcript}
+
+--- INSTRUCTIONS FOR NEXT QUESTION ---
+Current Round: {round_type.display_name}
+Target Difficulty: {difficulty.value.upper()}
+Action: {adaptive_decision.action.upper()}
+Behavioral Directive: {adaptive_decision.behavioral_directive or 'None'}
+
+Please provide the evaluation of the latest answer and the text for the next question.
+Ensure output is ONLY valid JSON.
+"""
+
+        try:
+            logger.info(f"[Session {session_id}] Calling CognitiveEngine (Model: {self.model_name})...")
+            completion = await self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=0.7,
+                response_format={"type": "json_object"}
+            )
+            
+            raw_response = completion.choices[0].message.content
+            logger.debug(f"LLM JSON Response: {raw_response}")
+            
+            data = json.loads(raw_response)
+            
+            # Extract evaluation
+            eval_data = data.get("evaluation", {})
+            scores = {
+                "technical_correctness": float(eval_data.get("technical_correctness", 5.0)),
+                "communication_quality": float(eval_data.get("communication_quality", 5.0)),
+                "answer_depth": float(eval_data.get("answer_depth", 5.0)),
+                "relevance": float(eval_data.get("relevance", 5.0)),
+                "professionalism": float(eval_data.get("professionalism", 5.0)),
+            }
+            
+            # Extract next question
+            next_q_text = data.get("next_question_text", "Could you tell me more about that?")
+            
+            # Create the Question Record
+            next_q = QuestionRecord(
+                session_id=session_id,
+                round_type=round_type,
+                difficulty=difficulty,
+                question_text=next_q_text
+            )
+            
+            # Track follow-up lineage (simplified: if action is follow-up, mark it)
+            if adaptive_decision.action == "follow_up":
+                next_q.parent_question_id = "previous_question_id" # Real ID linked in orchestrator
+                
+            return scores, next_q
+
+        except Exception as e:
+            logger.error(f"Cognitive Engine failed: {e}", exc_info=True)
+            # Fallback
+            fallback_scores = {
+                "technical_correctness": 5.0,
+                "communication_quality": 5.0,
+                "answer_depth": 5.0,
+                "relevance": 5.0,
+                "professionalism": 5.0,
+            }
+            fallback_q = QuestionRecord(
+                session_id=session_id,
+                round_type=round_type,
+                difficulty=difficulty,
+                question_text="Thank you. Could you elaborate a bit more on your experience?"
+            )
+            return fallback_scores, fallback_q
+"""FastAPI routes for resume upload, analysis, and question generation."""
+
+import logging
+import os
+import tempfile
+import uuid
+from typing import List
+
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
+
+from app.models.candidate_profile import CandidateProfile
+from app.resume.analyzer import ResumeAnalyzer
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/resume", tags=["Resume"])
+
+# Shared analyzer instance â€” created once, reused across requests.
+_analyzer = ResumeAnalyzer()
+
+# Allowed MIME types and extensions
+_ALLOWED_EXTENSIONS = {".pdf", ".docx"}
+_MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+@router.post(
+    "/upload",
+    response_model=CandidateProfile,
+    summary="Upload and analyse a resume",
+    description=(
+        "Accepts a PDF or DOCX resume file, extracts structured data via LLM, "
+        "builds a candidate profile with level classification and interview "
+        "focus recommendations."
+    ),
+)
+async def upload_resume(file: UploadFile = File(...)) -> CandidateProfile:
+    """Upload a resume file and receive a full ``CandidateProfile``.
+
+    The file is saved to a temporary location, processed through the
+    analysis pipeline, and then cleaned up.
+
+    Args:
+        file: The uploaded resume file (PDF or DOCX).
+
+    Returns:
+        A ``CandidateProfile`` JSON response.
+
+    Raises:
+        HTTPException 400: If the file type is unsupported or the file is empty.
+        HTTPException 413: If the file exceeds the size limit.
+        HTTPException 500: If processing fails unexpectedly.
+    """
+
+    # Validate filename and extension
+    if not file.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No filename provided.",
+        )
+
+    _, ext = os.path.splitext(file.filename)
+    ext = ext.lower()
+
+    if ext not in _ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                f"Unsupported file type '{ext}'. "
+                f"Allowed types: {', '.join(sorted(_ALLOWED_EXTENSIONS))}"
+            ),
+        )
+
+    # Read file content
+    try:
+        content = await file.read()
+    except Exception as exc:
+        logger.exception("Failed to read uploaded file: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to read the uploaded file.",
+        )
+
+    if not content:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is empty.",
+        )
+
+    if len(content) > _MAX_FILE_SIZE_BYTES:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=(
+                f"File too large ({len(content)} bytes). "
+                f"Maximum allowed size is {_MAX_FILE_SIZE_BYTES} bytes."
+            ),
+        )
+
+    # Save to a temporary file
+    tmp_path: str | None = None
+    try:
+        suffix = ext
+        unique_name = f"resume_{uuid.uuid4().hex}{suffix}"
+        tmp_dir = tempfile.gettempdir()
+        tmp_path = os.path.join(tmp_dir, unique_name)
+
+        with open(tmp_path, "wb") as tmp_file:
+            tmp_file.write(content)
+
+        logger.info(
+            "Saved uploaded resume to temp file: %s (%d bytes)",
+            tmp_path,
+            len(content),
+        )
+
+        # Run the full analysis pipeline
+        profile = await _analyzer.analyze(tmp_path)
+        return profile
+
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        logger.exception("Resume analysis failed: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Resume analysis failed: {exc}",
+        )
+
+    except Exception as exc:
+        logger.exception("Unexpected error during resume analysis: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while processing the resume.",
+        )
+
+    finally:
+        # Clean up the temporary file
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+                logger.debug("Cleaned up temp file: %s", tmp_path)
+            except OSError:
+                logger.warning("Failed to clean up temp file: %s", tmp_path)
+
+
+@router.post(
+    "/questions",
+    response_model=List[str],
+    summary="Generate personalised interview questions",
+    description=(
+        "Accepts a CandidateProfile JSON body and returns exactly 10 "
+        "personalized interview questions calibrated to the candidate's "
+        "level, skills, and project experience."
+    ),
+)
+async def generate_questions(profile: CandidateProfile) -> List[str]:
+    """Generate 10 personalised interview questions from a ``CandidateProfile``.
+
+    Args:
+        profile: A ``CandidateProfile`` (typically obtained from
+            ``POST /resume/upload``).
+
+    Returns:
+        A JSON array of 10 interview question strings.
+
+    Raises:
+        HTTPException 500: If question generation fails unexpectedly.
+    """
+
+    try:
+        questions = await _analyzer.generate_questions(profile)
+        logger.info(
+            "Generated %d questions for candidate: %s",
+            len(questions),
+            profile.resume_data.name or "<unknown>",
+        )
+        return questions
+
+    except Exception as exc:
+        logger.exception("Question generation failed: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate interview questions.",
+        )
+"""Top-level resume analysis orchestrator.
+
+Chains together file parsing â†’ LLM extraction â†’ profile building and also
+provides LLM-powered interview question generation.
+"""
+
+import json
+import logging
+from typing import List
+
+import groq
+
+from app.config import GROQ_API_KEY
+from app.models.candidate_profile import CandidateProfile, ResumeData
+from app.prompts.resume_questions import get_resume_questions_prompt
+from app.resume.extractor import ResumeExtractor
+from app.resume.parser import extract_resume_text
+from app.resume.profile_builder import ProfileBuilder
+
+logger = logging.getLogger(__name__)
+
+_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+
+
+class ResumeAnalyzer:
+    """Orchestrates the full resume analysis pipeline.
+
+    Usage::
+
+        analyzer = ResumeAnalyzer()
+        profile = await analyzer.analyze("path/to/resume.pdf")
+        questions = await analyzer.generate_questions(profile)
+    """
+
+    def __init__(self) -> None:
+        self._extractor = ResumeExtractor()
+        self._profile_builder = ProfileBuilder()
+        self._groq_client = groq.AsyncGroq(api_key=GROQ_API_KEY or "missing_api_key")
+        logger.info("ResumeAnalyzer initialised")
+
+    async def analyze(self, file_path: str) -> CandidateProfile:
+        """Run the full pipeline: parse â†’ extract â†’ build profile.
+
+        Args:
+            file_path: Path to a ``.pdf`` or ``.docx`` resume file.
+
+        Returns:
+            A fully populated ``CandidateProfile``.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            ValueError: If the file format is unsupported.
+            RuntimeError: If text extraction fails.
+        """
+
+        logger.info("Starting resume analysis for: %s", file_path)
+
+        # Step 1 â€” Extract raw text from the file
+        raw_text = extract_resume_text(file_path)
+        if not raw_text.strip():
+            logger.warning("Extracted text is empty for file: %s", file_path)
+            return CandidateProfile(resume_data=ResumeData())
+
+        # Step 2 â€” Send raw text to the LLM for structured extraction
+        resume_data = await self._extractor.extract(raw_text)
+
+        # Step 3 â€” Build the candidate profile heuristically
+        profile = self._profile_builder.build(resume_data)
+
+        logger.info(
+            "Resume analysis complete â€” candidate=%s, level=%s",
+            profile.resume_data.name or "<unknown>",
+            profile.candidate_level.value,
+        )
+        return profile
+
+    async def generate_questions(
+        self, profile: CandidateProfile
+    ) -> List[str]:
+        """Generate 10 personalized interview questions for the candidate.
+
+        Args:
+            profile: A ``CandidateProfile`` built from the candidate's resume.
+
+        Returns:
+            A list of exactly 10 interview question strings. Falls back to
+            generic questions if the LLM call fails.
+        """
+
+        prompt = get_resume_questions_prompt(profile)
+        logger.info("Generating interview questions for: %s", profile.resume_data.name or "<unknown>")
+
+        try:
+            chat_completion = await self._groq_client.chat.completions.create(
+                model=_MODEL,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a senior technical interviewer. Respond "
+                            "with a JSON object containing exactly 10 "
+                            "interview questions. No extra text."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.7,
+                max_tokens=4096,
+            )
+
+            raw_json = chat_completion.choices[0].message.content
+            if not raw_json:
+                logger.error("LLM returned empty response for question generation.")
+                return self._fallback_questions(profile)
+
+            parsed = json.loads(raw_json)
+
+            # Accept "questions" key or fall back to first list value
+            questions: List[str] = []
+            if isinstance(parsed, dict):
+                if "questions" in parsed and isinstance(parsed["questions"], list):
+                    questions = [str(q) for q in parsed["questions"]]
+                else:
+                    # Try to find the first list value in the dict
+                    for value in parsed.values():
+                        if isinstance(value, list):
+                            questions = [str(q) for q in value]
+                            break
+            elif isinstance(parsed, list):
+                questions = [str(q) for q in parsed]
+
+            if not questions:
+                logger.warning("LLM response parsed but no questions found.")
+                return self._fallback_questions(profile)
+
+            # Ensure exactly 10
+            questions = questions[:10]
+            while len(questions) < 10:
+                questions.append(
+                    f"Can you tell us more about your experience with "
+                    f"{profile.resume_data.skills[len(questions) % max(len(profile.resume_data.skills), 1)]}?"
+                    if profile.resume_data.skills
+                    else "Can you walk us through a challenging project you've worked on?"
+                )
+
+            logger.info("Successfully generated %d interview questions", len(questions))
+            return questions
+
+        except json.JSONDecodeError as exc:
+            logger.exception("Failed to parse question-generation response: %s", exc)
+            return self._fallback_questions(profile)
+
+        except groq.APIError as exc:
+            logger.exception("Groq API error during question generation: %s", exc)
+            return self._fallback_questions(profile)
+
+        except Exception as exc:
+            logger.exception("Unexpected error during question generation: %s", exc)
+            return self._fallback_questions(profile)
+
+    @staticmethod
+    def _fallback_questions(profile: CandidateProfile) -> List[str]:
+        """Generate generic fallback questions when the LLM is unavailable.
+
+        Args:
+            profile: The candidate profile to personalise questions minimally.
+
+        Returns:
+            A list of 10 generic but reasonable interview questions.
+        """
+
+        name = profile.resume_data.name or "the candidate"
+        skills = profile.resume_data.skills[:3] if profile.resume_data.skills else ["your primary technology"]
+
+        return [
+            f"Can you introduce yourself and summarise your technical background?",
+            f"What motivated you to pursue a career in software development?",
+            f"Tell us about your experience with {skills[0]}.",
+            f"Describe a challenging technical problem you solved recently.",
+            f"How do you approach learning a new technology or framework?",
+            f"Can you walk us through the architecture of one of your projects?",
+            f"How do you handle code reviews and feedback from peers?",
+            f"Describe a situation where you had to debug a difficult production issue.",
+            f"What is your experience with version control and collaborative development?",
+            f"Where do you see your career heading in the next 2-3 years?",
+        ]
+"""
+Nephele Vision Pipeline - Main Entry Point.
+
+Orchestrates the complete computer vision pipeline:
+    Camera Capture â†’ Face Detection â†’ FaceMesh â†’ Eye Contact â†’
+    Head Pose â†’ Engagement â†’ WebSocket Output
+
+Optimized for Raspberry Pi 4:
+    - Camera runs in a separate thread (decoupled from processing)
+    - Processing runs in the main thread at whatever FPS it can achieve
+    - Optional debug overlay window (disable in production)
+    - WebSocket client runs in its own thread with async I/O
+
+Usage:
+    python -m edge.vision.main
+    python -m edge.vision.main --no-display  # headless mode
+    python -m edge.vision.main --ws-url ws://backend:8000/ws/vision
+"""
+
+import sys
+import cv2
+import time
+import signal
+import logging
+import argparse
+from typing import Optional
+
+from .camera.camera_service import CameraService
+from .detection.face_detector import FaceDetector
+from .detection.facemesh_detector import FaceMeshDetector
+from .analytics.eye_contact import EyeContactDetector
+from .analytics.head_pose import HeadPoseEstimator
+from .analytics.engagement import EngagementAnalyzer
+from .networking.websocket_client import WebSocketClient
+from .models.metrics import (
+    VisionMetrics,
+    FaceDetectionResult,
+    EyeContactResult,
+    HeadPoseResult,
+)
+from .utils.fps import FPSCounter
+from .utils.drawing import OverlayDrawer
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+logger = logging.getLogger(__name__)
+
+
+class VisionPipeline:
+    """
+    Main vision pipeline orchestrator.
+    
+    Coordinates all vision components and manages the processing loop.
+    """
+    
+    def __init__(
+        self,
+        camera_id: int = 0,
+        width: int = 640,
+        height: int = 480,
+        target_fps: int = 15,
+        use_pi_camera: bool = False,
+        show_display: bool = True,
+        ws_url: str = "ws://localhost:8000/ws/vision",
+        enable_websocket: bool = True,
+        on_metrics: Optional[callable] = None,
+    ):
+        """
+        Args:
+            camera_id: Camera device index.
+            width: Capture width.
+            height: Capture height.
+            target_fps: Target FPS for camera capture.
+            use_pi_camera: Whether to use Pi Camera backend.
+            show_display: Whether to show debug overlay window.
+            ws_url: WebSocket server URL.
+            enable_websocket: Whether to enable WebSocket streaming.
+            on_metrics: Callback function for direct metrics injection.
+        """
+        self._show_display = show_display
+        self._enable_ws = enable_websocket
+        self._on_metrics = on_metrics
+        self._running = False
+        self._width = width
+        self._height = height
+        
+        # Initialize components
+        logger.info("Initializing vision pipeline components...")
+        
+        # Camera
+        self._camera = CameraService(
+            camera_id=camera_id,
+            width=width,
+            height=height,
+            target_fps=target_fps,
+            use_pi_camera=use_pi_camera,
+        )
+        
+        # Detection
+        self._face_detector = FaceDetector(min_confidence=0.5)
+        self._facemesh = FaceMeshDetector(
+            max_faces=1,
+            refine_landmarks=True,
+        )
+        
+        # Analytics
+        self._eye_contact = EyeContactDetector()
+        self._head_pose = HeadPoseEstimator()
+        self._engagement = EngagementAnalyzer()
+        
+        # Networking
+        self._ws_client: Optional[WebSocketClient] = None
+        if self._enable_ws:
+            self._ws_client = WebSocketClient(url=ws_url)
+        
+        # Utilities
+        self._fps_counter = FPSCounter(window_size=30)
+        self._overlay = OverlayDrawer()
+        
+        # Signal handling for graceful shutdown
+        signal.signal(signal.SIGINT, self._signal_handler)
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        
+        logger.info("Vision pipeline initialized successfully")
+    
+    def start(self) -> None:
+        """Start the vision pipeline."""
+        logger.info("Starting vision pipeline...")
+        
+        # Start camera
+        if not self._camera.start():
+            logger.error("Failed to start camera. Exiting.")
+            return
+        
+        # Start WebSocket client
+        if self._ws_client:
+            self._ws_client.start()
+        
+        # Wait for camera to warm up
+        time.sleep(1.0)
+        
+        self._running = True
+        logger.info("Vision pipeline running. Press 'q' to quit.")
+        
+        try:
+            self._processing_loop()
+        except KeyboardInterrupt:
+            logger.info("Interrupted by user")
+        finally:
+            self.stop()
+    
+    def stop(self) -> None:
+        """Stop all pipeline components."""
+        self._running = False
+        
+        logger.info("Stopping vision pipeline...")
+        
+        # Stop components
+        self._camera.stop()
+        
+        if self._ws_client:
+            self._ws_client.stop()
+        
+        # Release detectors
+        self._face_detector.release()
+        self._facemesh.release()
+        
+        # Close display
+        if self._show_display:
+            cv2.destroyAllWindows()
+        
+        # Print summary
+        logger.info(
+            f"Pipeline stopped. Total frames: {self._camera.frame_count}, "
+            f"Average FPS: {self._fps_counter.average_fps:.1f}"
+        )
+    
+    def _processing_loop(self) -> None:
+        """
+        Main processing loop.
+        
+        Runs until self._running is False or 'q' is pressed.
+        """
+        while self._running:
+            # Get frame from camera
+            frame = self._camera.get_frame()
+            if frame is None:
+                time.sleep(0.01)  # Brief sleep if no frame available
+                continue
+            
+            # Tick FPS counter
+            current_fps = self._fps_counter.tick()
+            
+            # --- DETECTION PHASE ---
+            # Face detection
+            face_result = self._face_detector.detect(frame)
+            
+            # Initialize defaults
+            eye_result = EyeContactResult()
+            pose_result = HeadPoseResult()
+            engagement_score = 0.0
+            landmarks = None
+            
+            if face_result.face_visible:
+                # --- LANDMARK PHASE ---
+                landmarks = self._facemesh.detect(frame)
+                
+                if landmarks:
+                    # --- ANALYTICS PHASE ---
+                    # Eye contact detection
+                    eye_result = self._eye_contact.calculate(landmarks)
+                    
+                    # Head pose estimation
+                    pose_result = self._head_pose.estimate(
+                        landmarks, self._width, self._height
+                    )
+                    
+                    # Engagement scoring
+                    engagement_score = self._engagement.calculate(
+                        face_result, eye_result, pose_result
+                    )
+            
+            # --- BUILD METRICS ---
+            metrics = VisionMetrics.from_results(
+                face=face_result,
+                eye=eye_result,
+                pose=pose_result,
+                engagement=engagement_score,
+                fps=current_fps,
+            )
+            
+            # --- SEND OVER WEBSOCKET ---
+            if self._ws_client:
+                self._ws_client.send_metrics(metrics.to_dict())
+                
+            # --- LOCAL CALLBACK ---
+            if self._on_metrics:
+                self._on_metrics(metrics.to_dict())
+            
+            # --- DEBUG OVERLAY ---
+            if self._show_display:
+                display_frame = frame.copy()
+                self._overlay.draw_debug_overlay(
+                    display_frame,
+                    metrics,
+                    face_result,
+                    landmarks,
+                )
+                
+                cv2.imshow("Nephele Vision", display_frame)
+                
+                # Check for quit key
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('q'):
+                    logger.info("Quit key pressed")
+                    self._running = False
+    
+    def _signal_handler(self, signum, frame) -> None:
+        """Handle shutdown signals."""
+        logger.info(f"Received signal {signum}, shutting down...")
+        self._running = False
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Nephele Vision Pipeline - AI Interview Robot CV System"
+    )
+    parser.add_argument(
+        "--camera-id", type=int, default=0,
+        help="Camera device index (default: 0)"
+    )
+    parser.add_argument(
+        "--width", type=int, default=640,
+        help="Capture width (default: 640)"
+    )
+    parser.add_argument(
+        "--height", type=int, default=480,
+        help="Capture height (default: 480)"
+    )
+    parser.add_argument(
+        "--fps", type=int, default=15,
+        help="Target FPS (default: 15)"
+    )
+    parser.add_argument(
+        "--pi-camera", action="store_true",
+        help="Use Pi Camera backend (V4L2)"
+    )
+    parser.add_argument(
+        "--no-display", action="store_true",
+        help="Run headless without debug overlay window"
+    )
+    parser.add_argument(
+        "--ws-url", type=str, default="ws://localhost:8000/ws/vision",
+        help="WebSocket server URL"
+    )
+    parser.add_argument(
+        "--no-websocket", action="store_true",
+        help="Disable WebSocket streaming"
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    """Entry point."""
+    args = parse_args()
+    
+    pipeline = VisionPipeline(
+        camera_id=args.camera_id,
+        width=args.width,
+        height=args.height,
+        target_fps=args.fps,
+        use_pi_camera=args.pi_camera,
+        show_display=not args.no_display,
+        ws_url=args.ws_url,
+        enable_websocket=not args.no_websocket,
+    )
+    
+    pipeline.start()
+
+
+if __name__ == "__main__":
+    main()
+"""
+Engagement Score Calculator.
+
+Scoring System:
+==============
+
+The engagement score is a weighted combination of multiple signals:
+
+1. FACE VISIBILITY (weight: 0.25)
+   - Binary: 100 if face is visible, 0 if not.
+   - Rationale: Can't be engaged if you're not facing the camera.
+
+2. EYE CONTACT SCORE (weight: 0.40)
+   - Direct passthrough of the eye contact score [0-100].
+   - Highest weight because eye contact is the strongest signal
+     of engagement in an interview context.
+
+3. HEAD POSE PENALTY (weight: 0.20)
+   - Based on how much the head deviates from facing the camera.
+   - Score = 100 - penalty, where penalty increases with deviation.
+   - Yaw > 30Â° or Pitch > 25Â° â†’ significant disengagement.
+
+4. FACE CONFIDENCE (weight: 0.15)
+   - Scales with detection confidence.
+   - Low confidence often means partially occluded face.
+
+Final Score Calculation:
+    engagement = Î£(weight_i * score_i) for each component
+    Clamped to [0, 100]
+
+Temporal Smoothing:
+    EMA with alpha=0.2 for smooth transitions.
+    This prevents the score from jumping erratically.
+"""
+
+import logging
+from typing import Optional
+
+from ..models.metrics import (
+    EyeContactResult,
+    HeadPoseResult,
+    FaceDetectionResult,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class EngagementAnalyzer:
+    """
+    Calculates a composite engagement score from vision signals.
+    
+    Usage:
+        analyzer = EngagementAnalyzer()
+        score = analyzer.calculate(
+            face_result=face_detection_result,
+            eye_result=eye_contact_result,
+            pose_result=head_pose_result,
+        )
+        print(f"Engagement: {score:.0f}%")
+    """
+    
+    # Default weights (must sum to 1.0)
+    DEFAULT_WEIGHTS = {
+        'face_visible': 0.25,
+        'eye_contact': 0.40,
+        'head_pose': 0.20,
+        'confidence': 0.15,
+    }
+    
+    def __init__(
+        self,
+        weights: Optional[dict] = None,
+        smoothing_alpha: float = 0.2,
+        yaw_threshold: float = 30.0,
+        pitch_threshold: float = 25.0,
+    ):
+        """
+        Args:
+            weights: Custom weight dict (keys: face_visible, eye_contact,
+                head_pose, confidence). Must sum to 1.0.
+            smoothing_alpha: EMA smoothing factor.
+            yaw_threshold: Yaw angle (degrees) at which head pose penalty
+                reaches maximum.
+            pitch_threshold: Pitch angle (degrees) at which head pose penalty
+                reaches maximum.
+        """
+        self._weights = weights or self.DEFAULT_WEIGHTS.copy()
+        self._alpha = smoothing_alpha
+        self._yaw_threshold = yaw_threshold
+        self._pitch_threshold = pitch_threshold
+        self._smoothed_score: Optional[float] = None
+        
+        # Validate weights
+        total = sum(self._weights.values())
+        if abs(total - 1.0) > 0.01:
+            logger.warning(
+                f"Engagement weights sum to {total}, expected 1.0. Normalizing."
+            )
+            for key in self._weights:
+                self._weights[key] /= total
+        
+        logger.info(
+            f"EngagementAnalyzer initialized: weights={self._weights}, "
+            f"alpha={smoothing_alpha}"
+        )
+    
+    def calculate(
+        self,
+        face_result: FaceDetectionResult,
+        eye_result: EyeContactResult,
+        pose_result: HeadPoseResult,
+    ) -> float:
+        """
+        Calculate the engagement score.
+        
+        Args:
+            face_result: Face detection result.
+            eye_result: Eye contact result.
+            pose_result: Head pose result.
+        
+        Returns:
+            Engagement score [0-100].
+        """
+        # Component 1: Face visibility (binary)
+        face_score = 100.0 if face_result.face_visible else 0.0
+        
+        # Component 2: Eye contact (direct passthrough)
+        eye_score = eye_result.eye_contact_score
+        
+        # Component 3: Head pose penalty
+        head_score = self._calculate_head_pose_score(pose_result)
+        
+        # Component 4: Detection confidence
+        confidence_score = face_result.confidence * 100.0
+        
+        # Weighted combination
+        raw_score = (
+            self._weights['face_visible'] * face_score +
+            self._weights['eye_contact'] * eye_score +
+            self._weights['head_pose'] * head_score +
+            self._weights['confidence'] * confidence_score
+        )
+        
+        # Clamp to [0, 100]
+        raw_score = max(0.0, min(100.0, raw_score))
+        
+        # Temporal smoothing
+        if self._smoothed_score is None:
+            self._smoothed_score = raw_score
+        else:
+            self._smoothed_score = (
+                self._alpha * raw_score +
+                (1 - self._alpha) * self._smoothed_score
+            )
+        
+        return self._smoothed_score
+    
+    def _calculate_head_pose_score(self, pose: HeadPoseResult) -> float:
+        """
+        Calculate head pose component score.
+        
+        The score decreases as the head rotates away from facing the camera.
+        Uses a quadratic penalty for smooth falloff:
+            penalty = (angle / threshold)^2
+        
+        This means small head movements are tolerated, but large rotations
+        are penalized heavily.
+        
+        Returns:
+            Score [0-100] where 100 = facing camera directly.
+        """
+        # Yaw penalty (left-right)
+        yaw_ratio = min(abs(pose.yaw) / self._yaw_threshold, 1.0)
+        yaw_penalty = yaw_ratio ** 2  # Quadratic falloff
+        
+        # Pitch penalty (up-down)
+        pitch_ratio = min(abs(pose.pitch) / self._pitch_threshold, 1.0)
+        pitch_penalty = pitch_ratio ** 2
+        
+        # Combined penalty (take the worse of the two, with some averaging)
+        combined_penalty = 0.6 * max(yaw_penalty, pitch_penalty) + \
+                          0.4 * (yaw_penalty + pitch_penalty) / 2
+        
+        return max(0.0, (1.0 - combined_penalty) * 100.0)
+    
+    def reset(self) -> None:
+        """Reset smoothing state."""
+        self._smoothed_score = None
