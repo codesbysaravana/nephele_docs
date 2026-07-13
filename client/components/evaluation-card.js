@@ -33,10 +33,10 @@ export function renderEvaluationCard(evalData) {
     };
 
     return `
-        <div class="card mt-6 border-indigo-500/30 bg-indigo-500/5 fade-up">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-400"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <div class="card mt-6 border-indigo-500/30 bg-indigo-500/5 fade-up p-8 shadow-sm">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-serif font-bold text-white flex items-center gap-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-400"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                     Evaluation Results
                 </h3>
                 <div class="text-right">
@@ -73,9 +73,9 @@ export function renderEvaluationCard(evalData) {
                 </div>
             </div>
             
-            <div class="mt-6 pt-6 border-t border-border-subtle">
-                <h4 class="text-xs font-mono text-slate-500 mb-3 tracking-wider">DETAILED FEEDBACK</h4>
-                <p class="text-sm text-slate-300 leading-relaxed bg-bg-panel/50 p-4 rounded-xl border border-border-subtle">
+            <div class="mt-8 pt-8 border-t border-border-subtle">
+                <h4 class="text-xs font-mono text-slate-500 mb-4 tracking-wider">DETAILED FEEDBACK</h4>
+                <p class="text-[15px] font-serif tracking-tight text-slate-300 leading-relaxed bg-bg-panel/50 p-6 rounded-2xl border border-border-subtle">
                     ${escapeHTML(evalData.detailed_feedback)}
                 </p>
             </div>

@@ -35,16 +35,21 @@ class CodingTopic(str, Enum):
     DYNAMIC_PROGRAMMING = "Dynamic Programming"
 
 
+class CodingExample(BaseModel):
+    input: str = ""
+    output: str = ""
+    explanation: str = ""
+
 class CodingQuestion(BaseModel):
     """Schema returned by the LLM when generating a coding question."""
 
     title: str = ""
     difficulty: CodingDifficulty = CodingDifficulty.EASY
     topic: CodingTopic = CodingTopic.ARRAYS
+    target_complexity: str = "O(N) Time, O(1) Space"
     description: str = ""
-    sample_input: str = ""
-    sample_output: str = ""
-    constraints: str = ""
+    examples: List[CodingExample] = Field(default_factory=list)
+    constraints: List[str] = Field(default_factory=list)
     hints: List[str] = Field(default_factory=list)
 
 

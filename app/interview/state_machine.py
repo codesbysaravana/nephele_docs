@@ -6,9 +6,9 @@ It enforces valid transitions and executes optional callback hooks.
 """
 
 import logging
-from typing import Any, Callable, Dict, Optional, Set
+from typing import Any, Callable, Dict, Optional
 
-from backend.models.enums import InterviewState
+from app.models.enums import InterviewState
 
 logger = logging.getLogger(__name__)
 

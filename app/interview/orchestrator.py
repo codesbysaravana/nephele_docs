@@ -7,22 +7,20 @@ AI components (LLM, Scorer) to drive the interview forward.
 """
 
 import logging
-from typing import Optional, Tuple
 
-from backend.models.domain import (
+from app.models.domain import (
     AnswerRecord,
     InterviewSession,
-    MultiModalSignals,
     QuestionRecord,
 )
-from backend.models.enums import Difficulty, InterviewState, RoundType
-from backend.models.events import StateChangedEvent
+from app.models.enums import InterviewState, RoundType
+from app.models.events import StateChangedEvent
 
 from .state_machine import InterviewStateMachine, TransitionError
 from .conversation_manager import ConversationManager
 from .multimodal_fusion import MultiModalFusionEngine
 from .adaptive_engine import AdaptiveDecisionEngine
-from backend.ai.cognitive_engine import CognitiveEngine
+from app.ai.cognitive_engine import CognitiveEngine
 
 logger = logging.getLogger(__name__)
 

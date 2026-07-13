@@ -5,10 +5,7 @@ Tests the full pipeline with mock camera data.
 Does not require a real camera.
 """
 
-import cv2
 import numpy as np
-import pytest
-from unittest.mock import MagicMock, patch
 
 from edge.vision.models.metrics import (
     VisionMetrics,
@@ -101,7 +98,6 @@ class TestPipelineIntegration:
 
     def test_websocket_payload_format(self):
         """WebSocket payload should match expected format."""
-        import json
 
         metrics = VisionMetrics(
             face_visible=True,
@@ -175,9 +171,9 @@ class TestPipelineIntegration:
 
         face_detector = FaceDetector()
         facemesh = FaceMeshDetector()
-        eye_contact = EyeContactDetector()
-        head_pose = HeadPoseEstimator()
-        engagement = EngagementAnalyzer()
+        EyeContactDetector()
+        HeadPoseEstimator()
+        EngagementAnalyzer()
 
         # Cleanup
         face_detector.release()

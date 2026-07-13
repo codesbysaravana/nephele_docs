@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface antialiased overflow-hidden selection:bg-secondary selection:text-on-secondary min-h-screen;
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(28, 28, 28, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .active-glow {
+    box-shadow: 0 0 60px 0 rgba(173, 198, 255, 0.15);
+  }
+
+  .glow-active {
+    box-shadow: 0 0 60px -15px rgba(75, 142, 255, 0.15);
+  }
+
+  .ghost-button {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .ghost-button:hover {
+    box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .milled-border {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  .progress-bar-fill {
+    background: linear-gradient(90deg, #4b8eff, #adc6ff);
+  }
+
+  .input-inset {
+    background: #121212;
+    border: 1px solid transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .input-inset:focus-within {
+    border-color: rgba(255, 255, 255, 0.2);
+    border-bottom-color: #4b8eff;
+  }
+
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+
+  /* Subtle Fade In Animation for scroll */
+  .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

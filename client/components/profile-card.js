@@ -18,10 +18,10 @@ export function renderProfileCard(profile) {
     if (level === 'junior') levelBadge = 'badge-emerald';
 
     return `
-        <div class="card max-w-4xl mx-auto mt-8 fade-up">
-            <div class="flex items-start justify-between border-b border-border-subtle pb-6 mb-6">
+        <div class="card max-w-4xl mx-auto mt-8 fade-up p-8 shadow-sm">
+            <div class="flex items-start justify-between border-b border-border-subtle pb-8 mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">${escapeHTML(d.name) || 'Unknown Candidate'}</h2>
+                    <h2 class="text-3xl font-serif font-bold text-white mb-2 tracking-tight">${escapeHTML(d.name) || 'Unknown Candidate'}</h2>
                     <div class="flex items-center gap-3">
                         <span class="text-slate-400 font-mono text-sm">${escapeHTML(d.email) || 'No email provided'}</span>
                         <div class="w-1 h-1 rounded-full bg-slate-700"></div>

@@ -33,7 +33,7 @@ import logging
 import urllib.request
 import numpy as np
 import mediapipe as mp
-from typing import Optional, List, NamedTuple
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 

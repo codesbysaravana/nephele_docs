@@ -225,7 +225,7 @@ class CameraService:
         Handles camera disconnection with automatic reconnection.
         """
         reconnect_attempts = 0
-        frame_interval = 1.0 / self._target_fps
+        1.0 / self._target_fps
         
         while self._running:
             if not self._connected:

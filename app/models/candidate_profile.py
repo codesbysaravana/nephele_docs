@@ -1,7 +1,7 @@
 """Pydantic v2 models for resume data and candidate profiling."""
 
-from pydantic import BaseModel, Field
-from typing import List, Optional
+from pydantic import BaseModel
+from typing import List
 from enum import Enum
 
 

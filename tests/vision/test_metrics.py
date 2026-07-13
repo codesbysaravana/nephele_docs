@@ -3,8 +3,6 @@ Unit tests for the metrics data models.
 """
 
 import json
-import pytest
-from datetime import datetime
 from edge.vision.models.metrics import (
     FaceDetectionResult,
     EyeContactResult,

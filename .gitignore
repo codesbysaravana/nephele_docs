@@ -64,3 +64,12 @@ npm-debug.log*
 
 # Streamlit
 .streamlit/secrets.toml
+
+old/
+
+# Temporary & Unnecessary Project Files
+dump.txt
+nephele_state.db
+client/
+.gemini/
+*.sqlite3

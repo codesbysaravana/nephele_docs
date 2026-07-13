@@ -8,10 +8,9 @@ scaling, follow-up decisions, and pacing.
 
 import logging
 from dataclasses import dataclass
-from typing import List
 
-from backend.models.domain import MultiModalSignals, InterviewSession
-from backend.models.enums import Difficulty
+from app.models.domain import InterviewSession
+from app.models.enums import Difficulty
 
 logger = logging.getLogger(__name__)
 

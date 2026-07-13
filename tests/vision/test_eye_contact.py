@@ -4,10 +4,8 @@ Unit tests for eye contact detection.
 Uses mock landmark data to test the algorithm without a camera.
 """
 
-import pytest
 from unittest.mock import MagicMock
 from edge.vision.analytics.eye_contact import EyeContactDetector
-from edge.vision.models.metrics import EyeContactResult
 
 
 def _make_landmark(x: float, y: float, z: float = 0.0):

@@ -2,7 +2,6 @@
 
 import time
 from collections import deque
-from typing import Optional
 
 
 class FPSCounter:

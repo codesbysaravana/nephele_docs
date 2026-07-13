@@ -14,7 +14,7 @@ import hashlib
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set
 
 from .enums import Difficulty, InterviewState, RoundType
 

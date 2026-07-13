@@ -40,9 +40,7 @@ Gaze Calculation:
 """
 
 import logging
-import numpy as np
-from typing import Optional, Tuple
-from collections import deque
+from typing import Optional
 
 from ..models.metrics import EyeContactResult
 

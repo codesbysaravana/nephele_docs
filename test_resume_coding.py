@@ -22,7 +22,7 @@ from app.resume.analyzer import ResumeAnalyzer
 from app.coding.coding_engine import CodingEngine
 from app.coding.difficulty_manager import DifficultyManager
 from app.coding.topics import get_recommended_topics
-from app.models.coding_models import CodingDifficulty, CodingTopic
+from app.models.coding_models import CodingTopic
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -147,7 +147,7 @@ async def test_coding_pipeline(profile):
     If yes, I return the indices. Otherwise, I store the current element and its index.
     Time complexity is O(n) and space complexity is O(n).
     """
-    print(f"\n--- Evaluating a GOOD answer ---")
+    print("\n--- Evaluating a GOOD answer ---")
     eval1 = await engine.evaluate_answer(q1, good_answer)
     print(f"  Understanding: {eval1.understanding}")
     print(f"  Logic: {eval1.logic}")
@@ -171,7 +171,7 @@ async def test_coding_pipeline(profile):
 
     # Simulate a POOR answer
     poor_answer = "Umm, I think I would use a for loop. Maybe nested loops? I'm not sure about the time complexity."
-    print(f"\n--- Evaluating a POOR answer ---")
+    print("\n--- Evaluating a POOR answer ---")
     eval2 = await engine.evaluate_answer(q2, poor_answer)
     print(f"  Overall: {eval2.overall}")
     print(f"  Feedback: {eval2.feedback[:200]}")

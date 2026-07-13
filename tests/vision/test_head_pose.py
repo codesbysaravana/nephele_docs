@@ -4,7 +4,6 @@ Unit tests for head pose estimation.
 Uses mock landmark data to verify the solvePnP pipeline.
 """
 
-import pytest
 import numpy as np
 from unittest.mock import MagicMock
 from edge.vision.analytics.head_pose import HeadPoseEstimator

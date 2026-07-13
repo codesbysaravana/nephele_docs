@@ -20,7 +20,7 @@ from app.models.coding_models import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/coding", tags=["Coding"])
+router = APIRouter(tags=["Coding"])
 
 # A module-level engine instance (re-used across requests).
 _engine = CodingEngine()

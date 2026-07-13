@@ -13,7 +13,7 @@ from app.resume.analyzer import ResumeAnalyzer
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/resume", tags=["Resume"])
+router = APIRouter(tags=["Resume"])
 
 # Shared analyzer instance — created once, reused across requests.
 _analyzer = ResumeAnalyzer()

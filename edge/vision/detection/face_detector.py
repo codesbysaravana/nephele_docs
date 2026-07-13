@@ -24,7 +24,6 @@ import logging
 import urllib.request
 import numpy as np
 import mediapipe as mp
-from typing import Optional, Tuple
 
 from ..models.metrics import FaceDetectionResult
 

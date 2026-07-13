@@ -2,12 +2,10 @@
 
 import cv2
 import numpy as np
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple
 from ..models.metrics import (
     VisionMetrics,
     FaceDetectionResult,
-    EyeContactResult,
-    HeadPoseResult,
 )
 
 

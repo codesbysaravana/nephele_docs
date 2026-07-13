@@ -17,7 +17,6 @@ Usage:
     python -m edge.vision.main --ws-url ws://backend:8000/ws/vision
 """
 
-import sys
 import cv2
 import time
 import signal
@@ -34,7 +33,6 @@ from .analytics.engagement import EngagementAnalyzer
 from .networking.websocket_client import WebSocketClient
 from .models.metrics import (
     VisionMetrics,
-    FaceDetectionResult,
     EyeContactResult,
     HeadPoseResult,
 )

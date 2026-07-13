@@ -39,10 +39,29 @@ html,
 body {
     height: 100%;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
     background: var(--bg-deep);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
+}
+
+/* Typography Utilities */
+.font-serif {
+    font-family: 'Newsreader', Georgia, serif;
+}
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+.tracking-tighter {
+    letter-spacing: -0.04em;
+}
+.leading-relaxed {
+    line-height: 1.75;
+}
+.text-balance {
+    text-wrap: balance;
 }
 
 /* ── Scrollbar ─────────────────────────────────────────── */
@@ -637,24 +656,27 @@ textarea.input {
 
 /* ── Transcript / Chat ─────────────────────────────────── */
 .message-bubble {
-    max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 16px;
-    font-size: 13px;
-    line-height: 1.6;
+    max-width: 85%;
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    line-height: 1.7;
     animation: messageIn 0.3s var(--transition-smooth);
+    font-family: 'Newsreader', Georgia, serif;
+    letter-spacing: -0.01em;
 }
 
 .message-bubble.agent {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle);
-    border-bottom-left-radius: 4px;
+    background: transparent;
+    border: none;
     align-self: flex-start;
+    padding-left: 0;
 }
 
 .message-bubble.user {
-    background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 16px;
     border-bottom-right-radius: 4px;
     align-self: flex-end;
 }
@@ -1012,4 +1034,12 @@ textarea.input {
 .fade-up-stitch.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+.text-glow {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar-fill {
+    background: linear-gradient(90deg, #4b8eff, #adc6ff);
 }

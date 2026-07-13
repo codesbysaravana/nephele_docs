@@ -8,9 +8,8 @@ nervousness markers) that the orchestrator should react to.
 
 import collections
 import logging
-from typing import List, Optional
 
-from backend.models.domain import MultiModalSignals, VisionSnapshot
+from app.models.domain import MultiModalSignals
 
 logger = logging.getLogger(__name__)
 

@@ -6,10 +6,8 @@ Provides utilities for building optimized context windows for the LLM
 to prevent token limit exhaustion while maintaining context.
 """
 
-from typing import List, Dict, Optional
 
-from backend.models.domain import InterviewSession
-from backend.models.enums import RoundType
+from app.models.domain import InterviewSession
 
 
 class ConversationManager:

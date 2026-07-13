@@ -105,11 +105,7 @@ export function renderNepheleHead(state = STATES.IDLE, size = 'large') {
                     </g>
                 </svg>
             </div>
-
-            <!-- State label -->
-            <div class="nephele-state-label ${state}" id="nephele-state-label">
-                ${label}
-            </div>
+            <!-- State label removed, handled externally via Status Capsule -->
         </div>
     `;
 }
@@ -186,7 +182,6 @@ export function updateNepheleState(newState) {
     ring.className = `nephele-ring ${ringState}`;
 
     if (label) {
-        label.className = `nephele-state-label ${newState}`;
         label.textContent = STATE_LABELS[newState] || '';
     }
 

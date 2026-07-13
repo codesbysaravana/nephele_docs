@@ -1,7 +1,6 @@
 """Resume file parser — extracts plain text from PDF and DOCX files."""
 
 import logging
-import os
 from pathlib import Path
 
 logger = logging.getLogger(__name__)

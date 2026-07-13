@@ -1,16 +1,16 @@
 import logging
 from typing import Dict
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # 1. Import existing HTTP Routers
 from app.routes.resume import router as resume_router
 from app.routes.coding import router as coding_router
-from app.routes.interview import router as interview_router
-
 # 2. Import Backend Intelligence Engine Components
-from backend.models.domain import InterviewSession, CandidateInfo
-from backend.interview.orchestrator import InterviewOrchestrator
+from app.models.domain import InterviewSession, CandidateInfo
+from app.interview.orchestrator import InterviewOrchestrator
+from app.interview.state_store import state_store
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nephele.gateway")
@@ -20,6 +20,14 @@ app = FastAPI(
     version="1.0.0",
     description="Unified REST and WebSocket server for Nephele Frontend"
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception at {request.url}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An unexpected internal server error occurred.", "error": str(exc)}
+    )
 
 # ---------------------------------------------------------------------------
 # A. CORS MIDDLEWARE (Frontend Readiness)
@@ -37,11 +45,6 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 app.include_router(resume_router, prefix="/api/v1/resume", tags=["Resume Pipeline"])
 app.include_router(coding_router, prefix="/api/v1/coding", tags=["Coding Engine"])
-app.include_router(interview_router, prefix="/api/v1/chat", tags=["Legacy Chat"])
-
-# Also mount resume and coding at root level for backward compatibility with existing tests/tools
-app.include_router(resume_router, prefix="/resume", tags=["Resume Pipeline (Legacy)"])
-app.include_router(coding_router, prefix="/coding", tags=["Coding Engine (Legacy)"])
 
 # ---------------------------------------------------------------------------
 # C. IN-MEMORY SESSION STORE (Active Interview Orchestrators)
@@ -55,6 +58,10 @@ active_sessions: Dict[str, InterviewOrchestrator] = {}
 async def create_session(candidate_name: str = "Candidate", role: str = "Software Engineer"):
     """Creates a new live interview session and initializes the orchestrator."""
     session = InterviewSession(candidate=CandidateInfo(name=candidate_name, target_role=role))
+    
+    # Save to SQLite
+    state_store.save_session(session)
+    
     orchestrator = InterviewOrchestrator(session)
     active_sessions[session.id] = orchestrator
     logger.info(f"Created new interview session: {session.id}")
@@ -76,8 +83,14 @@ async def vision_websocket_endpoint(websocket: WebSocket, session_id: str):
     await websocket.accept()
     orchestrator = active_sessions.get(session_id)
     if not orchestrator:
-        await websocket.close(code=4004, reason="Session not found")
-        return
+        # Try loading from SQLite
+        session = state_store.get_session(session_id)
+        if session:
+            orchestrator = InterviewOrchestrator(session)
+            active_sessions[session_id] = orchestrator
+        else:
+            await websocket.close(code=4004, reason="Session not found")
+            return
 
     try:
         while True:
@@ -97,13 +110,52 @@ async def vision_websocket_endpoint(websocket: WebSocket, session_id: str):
 async def interview_websocket_endpoint(websocket: WebSocket, session_id: str):
     """
     Bi-directional communication loop for the live interview:
-    Frontend sends candidate speech transcripts -> Orchestrator evaluates -> Returns AI speech & state.
+    Frontend streams PCM audio -> AssemblyAI STT -> Orchestrator -> AI Response -> TTS.
     """
     await websocket.accept()
     orchestrator = active_sessions.get(session_id)
     if not orchestrator:
-        await websocket.close(code=4004, reason="Session not found")
-        return
+        session = state_store.get_session(session_id)
+        if session:
+            orchestrator = InterviewOrchestrator(session)
+            active_sessions[session_id] = orchestrator
+        else:
+            await websocket.close(code=4004, reason="Session not found")
+            return
+
+    from app.services.stt_service import AssemblyAIStreamer
+
+    # Async callback for when AssemblyAI emits a transcript
+    async def on_transcript(text: str, is_final: bool):
+        if not is_final:
+            # Send partial transcript to frontend to trigger barge-in / interrupt
+            try:
+                await websocket.send_json({"type": "partial_transcript", "text": text})
+            except Exception:
+                pass
+            return
+            
+        if is_final:
+            # Process through Orchestrator
+            ai_response = await orchestrator.process_candidate_message(text, duration=5.0)  # Approximate duration for now
+            state_store.save_session(orchestrator.session)
+
+            await websocket.send_json({
+                "type": "agent_speech",
+                "text": ai_response,
+                "state": orchestrator.session.current_state.value,
+                "round": orchestrator.session.current_round_type.display_name if orchestrator.session.current_round_type else None,
+                "difficulty": orchestrator.session.current_difficulty.value,
+                "latest_fused_score": orchestrator.session.last_answer.answer_score if orchestrator.session.last_answer else 0.0
+            })
+            
+            from app.services.tts_service import generate_speech_audio
+            audio_bytes = await generate_speech_audio(ai_response)
+            if audio_bytes:
+                await websocket.send_bytes(audio_bytes)
+
+    stt = AssemblyAIStreamer(on_transcript)
+    await stt.connect()
 
     try:
         greeting = await orchestrator.start_interview()
@@ -115,22 +167,33 @@ async def interview_websocket_endpoint(websocket: WebSocket, session_id: str):
         })
 
         while True:
-            payload = await websocket.receive_json()
-            msg_type = payload.get("type")
+            message = await websocket.receive()
+            if "bytes" in message and message["bytes"]:
+                # Frontend sent PCM audio
+                await stt.send_audio(message["bytes"])
+            elif "text" in message and message["text"]:
+                payload = json.loads(message["text"])
+                # Handle control messages if needed
+                if payload.get("type") == "candidate_answer":
+                    # Fallback for text transcripts
+                    text = payload.get("transcript", "")
+                    duration = payload.get("duration_seconds", 5.0)
+                    ai_response = await orchestrator.process_candidate_message(text, duration)
+                    state_store.save_session(orchestrator.session)
+                    await websocket.send_json({
+                        "type": "agent_speech",
+                        "text": ai_response,
+                        "state": orchestrator.session.current_state.value,
+                        "round": orchestrator.session.current_round_type.display_name if orchestrator.session.current_round_type else None,
+                        "difficulty": orchestrator.session.current_difficulty.value,
+                        "latest_fused_score": orchestrator.session.last_answer.answer_score if orchestrator.session.last_answer else 0.0
+                    })
+                    
+                    audio_bytes = await generate_speech_audio(ai_response)
+                    if audio_bytes:
+                        await websocket.send_bytes(audio_bytes)
 
-            if msg_type == "candidate_answer":
-                transcript = payload.get("transcript", "")
-                duration = payload.get("duration_seconds", 5.0)
-
-                ai_response = await orchestrator.process_candidate_message(transcript, duration)
-
-                await websocket.send_json({
-                    "type": "agent_speech",
-                    "text": ai_response,
-                    "state": orchestrator.session.current_state.value,
-                    "round": orchestrator.session.current_round_type.display_name if orchestrator.session.current_round_type else None,
-                    "difficulty": orchestrator.session.current_difficulty.value,
-                    "latest_fused_score": orchestrator.session.last_answer.answer_score if orchestrator.session.last_answer else 0.0
-                })
     except WebSocketDisconnect:
         logger.info(f"Interview WebSocket disconnected for session {session_id}")
+    finally:
+        await stt.close()

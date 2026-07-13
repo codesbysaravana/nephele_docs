@@ -8,13 +8,14 @@ outputs.
 
 import json
 import logging
+import asyncio
 from typing import Tuple, Dict
 
 import groq
 from app.config import GROQ_API_KEY
-from backend.models.domain import QuestionRecord
-from backend.models.enums import RoundType, Difficulty
-from backend.interview.adaptive_engine import AdaptiveDecision
+from app.models.domain import QuestionRecord
+from app.models.enums import RoundType, Difficulty
+from app.interview.adaptive_engine import AdaptiveDecision
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ Ensure output is ONLY valid JSON.
 
         try:
             logger.info(f"[Session {session_id}] Calling CognitiveEngine (Model: {self.model_name})...")
-            completion = await self.client.chat.completions.create(
+            coro = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[
                     {"role": "system", "content": self.SYSTEM_PROMPT},
@@ -95,6 +96,7 @@ Ensure output is ONLY valid JSON.
                 temperature=0.7,
                 response_format={"type": "json_object"}
             )
+            completion = await asyncio.wait_for(coro, timeout=15.0)
             
             raw_response = completion.choices[0].message.content
             logger.debug(f"LLM JSON Response: {raw_response}")

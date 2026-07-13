@@ -2,7 +2,6 @@
 Unit tests for engagement scoring.
 """
 
-import pytest
 from edge.vision.analytics.engagement import EngagementAnalyzer
 from edge.vision.models.metrics import (
     FaceDetectionResult,
@@ -122,7 +121,7 @@ class TestEngagementAnalyzer:
         pose = HeadPoseResult()
 
         # Start with high engagement
-        score1 = analyzer.calculate(face, eye_high, pose)
+        analyzer.calculate(face, eye_high, pose)
 
         # Sudden drop to low
         score2 = analyzer.calculate(face, eye_low, pose)

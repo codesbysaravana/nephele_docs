@@ -1,13 +1,11 @@
 import asyncio
 import os
 import sys
-import json
 
 # Ensure we can import app
 sys.path.insert(0, os.path.abspath('.'))
 
 # This will load dotenv and set up API keys
-from app import config
 from app.resume.analyzer import ResumeAnalyzer
 
 async def run_test():

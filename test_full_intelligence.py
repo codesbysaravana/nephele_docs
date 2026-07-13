@@ -8,7 +8,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from backend.models.domain import InterviewSession
 from backend.interview.orchestrator import InterviewOrchestrator
-from backend.models.enums import Difficulty
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 

@@ -3,7 +3,6 @@ Unit tests for FPS counter utility.
 """
 
 import time
-import pytest
 from edge.vision.utils.fps import FPSCounter
 
 

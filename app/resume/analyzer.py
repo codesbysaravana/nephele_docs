@@ -55,8 +55,9 @@ class ResumeAnalyzer:
 
         logger.info("Starting resume analysis for: %s", file_path)
 
-        # Step 1 — Extract raw text from the file
-        raw_text = extract_resume_text(file_path)
+        import asyncio
+        # Step 1 — Extract raw text from the file (running in thread pool to prevent blocking)
+        raw_text = await asyncio.to_thread(extract_resume_text, file_path)
         if not raw_text.strip():
             logger.warning("Extracted text is empty for file: %s", file_path)
             return CandidateProfile(resume_data=ResumeData())
@@ -91,7 +92,7 @@ class ResumeAnalyzer:
         logger.info("Generating interview questions for: %s", profile.resume_data.name or "<unknown>")
 
         try:
-            chat_completion = await self._groq_client.chat.completions.create(
+            coro = self._groq_client.chat.completions.create(
                 model=_MODEL,
                 messages=[
                     {
@@ -108,6 +109,7 @@ class ResumeAnalyzer:
                 temperature=0.7,
                 max_tokens=4096,
             )
+            chat_completion = await asyncio.wait_for(coro, timeout=15.0)
 
             raw_json = chat_completion.choices[0].message.content
             if not raw_json:
@@ -170,18 +172,17 @@ class ResumeAnalyzer:
             A list of 10 generic but reasonable interview questions.
         """
 
-        name = profile.resume_data.name or "the candidate"
         skills = profile.resume_data.skills[:3] if profile.resume_data.skills else ["your primary technology"]
 
         return [
-            f"Can you introduce yourself and summarise your technical background?",
-            f"What motivated you to pursue a career in software development?",
+            "Can you introduce yourself and summarise your technical background?",
+            "What motivated you to pursue a career in software development?",
             f"Tell us about your experience with {skills[0]}.",
-            f"Describe a challenging technical problem you solved recently.",
-            f"How do you approach learning a new technology or framework?",
-            f"Can you walk us through the architecture of one of your projects?",
-            f"How do you handle code reviews and feedback from peers?",
-            f"Describe a situation where you had to debug a difficult production issue.",
-            f"What is your experience with version control and collaborative development?",
-            f"Where do you see your career heading in the next 2-3 years?",
+            "Describe a challenging technical problem you solved recently.",
+            "How do you approach learning a new technology or framework?",
+            "Can you walk us through the architecture of one of your projects?",
+            "How do you handle code reviews and feedback from peers?",
+            "Describe a situation where you had to debug a difficult production issue.",
+            "What is your experience with version control and collaborative development?",
+            "Where do you see your career heading in the next 2-3 years?",
         ]
