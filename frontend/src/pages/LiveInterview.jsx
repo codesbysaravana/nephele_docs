@@ -2,10 +2,24 @@ import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import { ThreeRobotHead } from '../utils/three-robot';
 import { motion } from 'framer-motion';
+import { api } from '../api/apiClient';
+import { AudioStreamer } from '../utils/audioStreamer';
 
 export function LiveInterview() {
-  const { interviewState, visionMetrics, interviewMessages } = useAppStore();
+  const { 
+    activeSessionId,
+    interviewState, 
+    visionMetrics, 
+    interviewMessages,
+    setInterviewState,
+    addInterviewMessage,
+    updateVisionMetrics
+  } = useAppStore();
+  
   const threeRef = useRef(null);
+  const interviewWsRef = useRef(null);
+  const visionWsRef = useRef(null);
+  const audioStreamerRef = useRef(null);
 
   useEffect(() => {
     let robotHead = null;
@@ -19,6 +33,88 @@ export function LiveInterview() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!activeSessionId) return;
+
+    // 1. Connect Interview WebSocket
+    const iWs = api.connectInterviewSocket(activeSessionId);
+    interviewWsRef.current = iWs;
+
+    iWs.onopen = async () => {
+      console.log("Interview WS Connected");
+      const streamer = new AudioStreamer(iWs);
+      audioStreamerRef.current = streamer;
+      try {
+        await streamer.start();
+        setInterviewState('LISTENING');
+      } catch (e) {
+        console.error("Microphone access denied", e);
+        setInterviewState('ERROR');
+      }
+    };
+
+    iWs.onmessage = (event) => {
+      if (typeof event.data === "string") {
+        try {
+          const payload = JSON.parse(event.data);
+          if (payload.type === "agent_speech") {
+            setInterviewState('SPEAKING');
+            addInterviewMessage({ sender: 'agent', content: payload.text });
+          } else if (payload.type === "partial_transcript") {
+            // Real-time transcript updates can go here if needed
+          }
+        } catch (e) {
+          console.error("Failed to parse JSON payload", e);
+        }
+      } else if (event.data instanceof Blob) {
+        // 3. Play incoming MP3 from AI
+        const audioUrl = URL.createObjectURL(event.data);
+        const audio = new Audio(audioUrl);
+        audio.onended = () => {
+          setInterviewState('LISTENING');
+        };
+        audio.play().catch(e => console.error("Audio playback failed:", e));
+      }
+    };
+
+    // 2. Connect Vision WebSocket (Mock telemetry loop)
+    const vWs = api.connectVisionSocket(activeSessionId);
+    visionWsRef.current = vWs;
+
+    vWs.onopen = () => {
+      console.log("Vision WS Connected");
+      const interval = setInterval(() => {
+        if (vWs.readyState === WebSocket.OPEN) {
+          const mockVision = {
+            eye_contact_score: 85 + Math.random() * 10,
+            engagement_score: 80 + Math.random() * 15,
+            yaw: Math.random() * 5,
+            pitch: Math.random() * 5,
+            roll: 0,
+            face_visible: true
+          };
+          vWs.send(JSON.stringify(mockVision));
+          updateVisionMetrics({
+            eyeContact: mockVision.eye_contact_score,
+            engagement: mockVision.engagement_score,
+            faceVisible: mockVision.face_visible
+          });
+        }
+      }, 1000 / 15); // 15fps
+      
+      vWs._mockInterval = interval;
+    };
+
+    return () => {
+      if (audioStreamerRef.current) audioStreamerRef.current.stop();
+      if (iWs) iWs.close();
+      if (vWs) {
+        if (vWs._mockInterval) clearInterval(vWs._mockInterval);
+        vWs.close();
+      }
+    };
+  }, [activeSessionId, setInterviewState, addInterviewMessage, updateVisionMetrics]);
 
   return (
     <div className="w-full h-full p-margin-safe lg:p-lg grid grid-cols-1 lg:grid-cols-12 gap-lg relative">
