@@ -65,7 +65,7 @@ export function Landing() {
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#capabilities">Capabilities</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#intelligence">Intelligence</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#architecture">Architecture</a>
-            <a className="text-primary border-b border-primary pb-1 hover:text-primary transition-colors duration-300" href="#initialize">Initialize</a>
+            <a className="text-primary border-b border-primary pb-1 hover:text-primary transition-colors duration-300" href="https://nephele-production.vercel.app/">Initialize</a>
           </nav>
           <button
             onClick={() => window.location.href = 'https://nephele-production.vercel.app/'}
@@ -103,7 +103,10 @@ export function Landing() {
               >
                 Initialize Interface
               </button>
-              <button className="w-full sm:w-auto ghost-button text-primary px-lg py-sm rounded-DEFAULT font-body-md text-body-md">
+              <button 
+                onClick={() => window.location.href = 'https://nephele-production.vercel.app/'}
+                className="w-full sm:w-auto ghost-button text-primary px-lg py-sm rounded-DEFAULT font-body-md text-body-md"
+              >
                 View Documentation
               </button>
             </div>
@@ -223,10 +226,10 @@ export function Landing() {
             Nephele
           </div>
           <nav className="flex gap-sm font-caption text-caption">
-            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Documentation</a>
-            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Privacy</a>
-            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Terms</a>
-            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="#">Github</a>
+            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="https://nephele-production.vercel.app/">Documentation</a>
+            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="https://nephele-production.vercel.app/">Privacy</a>
+            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="https://nephele-production.vercel.app/">Terms</a>
+            <a className="text-on-surface-variant hover:text-primary transition-opacity duration-200" href="https://nephele-production.vercel.app/">Github</a>
           </nav>
           <div className="font-caption text-caption text-on-surface-variant">
             © 2024 Nephele OS. Robotic Intelligence Redefined.
