@@ -103,7 +103,7 @@ export function Landing() {
               >
                 Initialize Interface
               </button>
-              <button 
+              <button
                 onClick={() => window.location.href = 'https://nephele-production.vercel.app/'}
                 className="w-full sm:w-auto ghost-button text-primary px-lg py-sm rounded-DEFAULT font-body-md text-body-md"
               >
