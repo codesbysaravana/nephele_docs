@@ -67,8 +67,8 @@ export function Landing() {
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-300" href="#architecture">Architecture</a>
             <a className="text-primary border-b border-primary pb-1 hover:text-primary transition-colors duration-300" href="#initialize">Initialize</a>
           </nav>
-          <button 
-            onClick={() => navigate('/home')} 
+          <button
+            onClick={() => window.location.href = 'https://nephele-production.vercel.app/'}
             className="hidden md:inline-flex bg-primary text-on-primary px-sm py-xs rounded-DEFAULT font-caption text-caption hover:opacity-90 transition-opacity"
           >
             Get Started
@@ -88,7 +88,7 @@ export function Landing() {
             </div>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(173,198,255,0.05)_0%,transparent_50%)]"></div>
           </div>
-          
+
           <div className="relative z-10 text-center w-full max-w-3xl fade-up mt-margin-safe pointer-events-auto">
             <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-primary tracking-tighter mb-sm">
               Meet Nephele.
@@ -97,8 +97,8 @@ export function Landing() {
               An Intelligent Robotic Operating System.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-sm">
-              <button 
-                onClick={() => navigate('/home')} 
+              <button
+                onClick={() => window.location.href = 'https://nephele-production.vercel.app/'}
                 className="w-full sm:w-auto bg-primary text-on-primary px-lg py-sm rounded-DEFAULT font-body-md text-body-md hover:bg-surface-tint transition-colors"
               >
                 Initialize Interface
@@ -125,7 +125,7 @@ export function Landing() {
             <span className="font-label-mono text-label-mono text-secondary uppercase tracking-widest mb-xs block">Capabilities</span>
             <h2 className="font-headline-md text-headline-md text-primary">Core Systems</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-md fade-up">
             {/* Voice Intelligence */}
             <div className="glass-panel rounded-xl p-md lg:col-span-8 flex flex-col justify-end min-h-[300px] relative overflow-hidden group hover:active-glow transition-all duration-500">
@@ -136,7 +136,7 @@ export function Landing() {
                 <p className="font-body-md text-body-md text-on-surface-variant">Low-latency WebSocket streaming for instantaneous, natural human-machine dialogue.</p>
               </div>
             </div>
-            
+
             {/* Real-Time Vision */}
             <div className="glass-panel rounded-xl p-md lg:col-span-4 flex flex-col justify-end min-h-[300px] relative overflow-hidden group hover:active-glow transition-all duration-500">
               <div className="absolute inset-0 bg-gradient-to-bl from-surface-container/50 to-transparent z-0"></div>
@@ -146,7 +146,7 @@ export function Landing() {
                 <p className="font-body-md text-body-md text-on-surface-variant">Multimodal computer vision processing at the edge.</p>
               </div>
             </div>
-            
+
             {/* Professional Engine */}
             <div className="glass-panel rounded-xl p-md lg:col-span-5 flex flex-col justify-end min-h-[300px] relative overflow-hidden group hover:active-glow transition-all duration-500">
               <div className="absolute inset-0 bg-gradient-to-tr from-surface-container/50 to-transparent z-0"></div>
@@ -156,7 +156,7 @@ export function Landing() {
                 <p className="font-body-md text-body-md text-on-surface-variant">AI-driven resume analysis and adaptive mock interview simulations.</p>
               </div>
             </div>
-            
+
             {/* Orchestration */}
             <div className="glass-panel rounded-xl p-md lg:col-span-7 flex flex-col justify-end min-h-[300px] relative overflow-hidden group hover:active-glow transition-all duration-500">
               <div className="absolute inset-0 bg-gradient-to-tl from-surface-container/50 to-transparent z-0"></div>
@@ -175,10 +175,10 @@ export function Landing() {
             <span className="font-label-mono text-label-mono text-secondary uppercase tracking-widest mb-xs block">Architecture</span>
             <h2 className="font-headline-md text-headline-md text-primary">System Topology</h2>
           </div>
-          
+
           <div className="glass-panel rounded-xl p-md max-w-4xl mx-auto fade-up milled-border relative">
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-            
+
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-y-lg gap-x-md">
               <div className="flex items-start gap-sm">
                 <div className="w-xs h-xs bg-secondary rounded-full mt-2 shadow-[0_0_10px_rgba(173,198,255,0.8)]"></div>
@@ -187,7 +187,7 @@ export function Landing() {
                   <p className="font-body-md text-body-md text-on-surface-variant">Localized processing for critical latency-sensitive operations.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-sm">
                 <div className="w-xs h-xs bg-secondary rounded-full mt-2 shadow-[0_0_10px_rgba(173,198,255,0.8)]"></div>
                 <div>
@@ -195,7 +195,7 @@ export function Landing() {
                   <p className="font-body-md text-body-md text-on-surface-variant">Continuous full-duplex communication channels.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-sm">
                 <div className="w-xs h-xs bg-secondary rounded-full mt-2 shadow-[0_0_10px_rgba(173,198,255,0.8)]"></div>
                 <div>
@@ -203,7 +203,7 @@ export function Landing() {
                   <p className="font-body-md text-body-md text-on-surface-variant">Hot-swappable intelligence nodes for specialized tasks.</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-sm">
                 <div className="w-xs h-xs bg-secondary rounded-full mt-2 shadow-[0_0_10px_rgba(173,198,255,0.8)]"></div>
                 <div>

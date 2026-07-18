@@ -73,3 +73,6 @@ nephele_state.db
 client/
 .gemini/
 *.sqlite3
+
+# Embedded repositories
+production/
